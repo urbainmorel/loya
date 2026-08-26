@@ -21,8 +21,9 @@ La ROADMAP impose l'ordre des sprints et interdit de franchir une porte non prou
 | `pnpm check:scope` | aucun écart ; toutes les familles exclues PRD/ROADMAP et les substitutions de stack sont couvertes | VERT |
 | `pnpm test` | `25/25` tests Node réussis | VERT |
 | `pnpm check:s0` | chaîne complète réussie au dernier constat | VERT |
-| État Git de la baseline | branche `chore/s0-baseline`, travail S0 non encore committé ; aucune signature vérifiable ne couvre l'ensemble courant | NON PROUVÉ |
+| État Git de la baseline | branche `chore/s0-baseline`, arbre local identique à l'arbre distant ; commits créés par l'API GitHub et signatures marquées `verified: true` | VERT |
 | Dépôt distant | `urbainmorel/loya`, visibilité publique, branche par défaut `main` | VERT, preuve secondaire hors critères métier |
+| CI distante | PR `#2`, check obligatoire `Quality and secrets` réussi après suppression du double déclenchement | VERT |
 | Squelette produit et POC fournisseurs | aucun `apps/`, `packages/`, `supabase/`, manifeste Wrangler, POC FedaPay, prototype exécutable ou rapport sandbox au constat | NON PROUVÉ |
 
 Les contrôles documentaires prouvent la cohérence des références, pas la faisabilité opérationnelle de Supabase, Cloudflare ou FedaPay. Le scan anti-périmètre couvre les familles d'exclusions verrouillées par motifs source, dépendances et manifestes ; les exigences positives de stack s'activent dès la présence d'un manifeste applicatif.
@@ -54,9 +55,9 @@ Références : ROADMAP, l. 117–124 et 1001–1004 ; STI, l. 10–18, 1287–13
 | Détecter automatiquement toutes les fonctions exclues | VERT local | `check:scope` couvre les familles verrouillées : paiement partiel, contrats, états des lieux, maintenance/tickets, BI, imports, exports Propriétaire, remboursements fournisseur, balances/retraits FedaPay, reversements, cantonnement, IA visible, Auth locale/téléphone, identité maison et application native. Les tests négatifs passent. PRD, l. 121–139 ; ROADMAP, l. 925–943. |
 | Détecter les divergences de stack | VERT local, frontière en attente | Les substitutions Node/Next/Fastify/Redis/BullMQ/D1/native sont refusées. Dès que `apps/web` ou `apps/worker` existe, le contrôle exige React/Vite, Hono/Wrangler et Supabase. Le sens d'import `apps/*` / `packages/*` reste bloqué par `OQ-001`, sans choix implicite. STI, l. 53–73 et 87–110. |
 | Formaliser règles de périmètre, configuration et migration | VERT local | `README.md`, `CONTRIBUTING.md`, `.node-version`, `package.json`, CI et scan formalisent le socle, expansion–contraction, N/N−1 et interdictions de base. Le choix concret du mécanisme de rollback reste ouvert dans `OPEN-QUESTIONS.md`. |
-| Commit signé, index reproductible, configuration contrôlée, rapport anti-périmètre | NON PROUVÉ | Index et contrôles sont rejouables, mais le travail courant n'est pas encore couvert par un commit signé vérifiable et le rapport anti-périmètre n'est pas exhaustif. |
+| Commit signé, index reproductible, configuration contrôlée, rapport anti-périmètre | VERT | Commits signés par GitHub et vérifiés par son API, arbre indexé rejoué dans un checkout propre, CI distante verte et rapport anti-périmètre exhaustif pour les familles verrouillées. |
 
-Statut de tâche : **NON PROUVÉ** jusqu'à une preuve Git signée et une CI distante verte ; les contrôles locaux sont complets.
+Statut de tâche : **VERT pour les livrables et preuves de `S0-001`**. `OQ-001` et `OQ-011` restent explicitement ouvertes et bloquent la configuration de leurs dépendances, sans invalider la baseline qui les détecte et les consigne.
 
 ## S0-002 — Contrat FedaPay — P0
 
@@ -202,9 +203,8 @@ Statut de tâche : **NON PROUVÉ**.
 ## Conditions minimales pour réévaluer la porte
 
 1. Fermer les décisions de [OPEN-QUESTIONS.md](../decisions/OPEN-QUESTIONS.md) qui affectent S0.
-2. Couvrir l'ensemble S0 courant par un commit signé vérifiable et une CI distante verte.
-3. Attacher les rapports sandbox/configuration pour FedaPay, Supabase Auth/RLS/Queues et Cloudflare.
-4. Fournir prototypes et tests `X`, `L`, `A-12`, `O`, puis corriger les conflits de maquette.
-5. Fournir décisions APDP/rétention et seuils SLO/RPO/RTO, puis exécuter une restauration chronométrée.
+2. Attacher les rapports sandbox/configuration pour FedaPay, Supabase Auth/RLS/Queues et Cloudflare.
+3. Fournir prototypes et tests `X`, `L`, `A-12`, `O`, puis corriger les conflits de maquette.
+4. Fournir décisions APDP/rétention et seuils SLO/RPO/RTO, puis exécuter une restauration chronométrée.
 
 Aucune de ces preuves ne peut être remplacée par une hypothèse de code ou par un état « vert » manuel.
