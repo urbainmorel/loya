@@ -1,0 +1,63 @@
+name: S0 Quality
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches-ignore:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: s0-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality and secrets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+
+      - name: Detect secrets
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.15.0
+          check-latest: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: 11.24.0
+          run_install: false
+
+      - name: Run S0 checks when the workspace exists
+        shell: bash
+        run: |
+          if [[ ! -f package.json ]]; then
+            echo "S0 workspace not scaffolded yet; pnpm check:s0 is deferred."
+            exit 0
+          fi
+
+          if [[ ! -f pnpm-lock.yaml ]]; then
+            echo "::error::package.json exists but pnpm-lock.yaml is missing."
+            exit 1
+          fi
+
+          pnpm install --frozen-lockfile
+          pnpm check:s0
