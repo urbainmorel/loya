@@ -26,6 +26,10 @@ create role __s0_oq002_owner
   noreplication
   nobypassrls;
 
+grant __s0_oq002_owner to postgres
+  with set true, inherit false, admin false
+  granted by postgres;
+
 create schema private authorization __s0_oq002_owner;
 create schema api authorization __s0_oq002_owner;
 
@@ -101,6 +105,9 @@ values
   ('10000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-00000000000a', 'a0000000-0000-4000-8000-000000000001'),
   ('20000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-00000000000b', 'b0000000-0000-4000-8000-000000000001'),
   ('20000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-00000000000b', 'a0000000-0000-4000-8000-000000000001');
+
+revoke __s0_oq002_owner from postgres
+  granted by postgres;
 
 notify pgrst, 'reload schema';
 

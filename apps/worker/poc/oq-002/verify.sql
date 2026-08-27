@@ -14,6 +14,8 @@ select ok(
       and not rolinherit
       and not rolreplication
       and not rolbypassrls
+      and not pg_has_role('postgres', '__s0_oq002_owner', 'SET')
+      and not pg_has_role('postgres', '__s0_oq002_owner', 'USAGE')
     from pg_catalog.pg_roles
     where rolname = '__s0_oq002_owner'
   ),
