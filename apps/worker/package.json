@@ -1,0 +1,19 @@
+{
+  "name": "@loya/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --config ../../wrangler.jsonc --port 8787",
+    "build": "wrangler deploy --dry-run --config ../../wrangler.jsonc --outdir ../../dist/worker",
+    "test": "vitest run --config vitest.config.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test/tsconfig.json"
+  },
+  "dependencies": {
+    "@loya/schemas": "workspace:*",
+    "hono": "4.13.5"
+  },
+  "devDependencies": {
+    "wrangler": "4.127.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "loya-s0-topology-poc",
+  "main": "./apps/worker/src/index.ts",
+  "compatibility_date": "2026-08-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "ENVIRONMENT": "s0-poc",
+  },
+  "assets": {
+    "directory": "./apps/web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/v1", "/v1/*"],
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": false,
+    },
+    "traces": {
+      // Les traces automatiques conservent les query strings. Elles restent OFF
+      // jusqu'à preuve d'une redaction conforme au STI §16.2.
+      "enabled": false,
+    },
+  },
+}
