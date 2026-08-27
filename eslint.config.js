@@ -8,7 +8,7 @@ export default tseslint.config(
   {
     ignores: [
       "**/dist/**",
-      ".wrangler/**",
+      "**/.wrangler/**",
       "coverage/**",
       "graphify-out/**",
       "test-results/**",
