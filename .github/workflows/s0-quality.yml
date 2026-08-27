@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Detect secrets
         uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
@@ -43,24 +44,29 @@ jobs:
           version: 11.24.0
           run_install: false
 
-      - name: Run the complete quality gate when the workspace exists
-        shell: bash
-        run: |
-          if [[ ! -f package.json ]]; then
-            echo "S0 workspace not scaffolded yet; pnpm check:s0 is deferred."
-            exit 0
-          fi
-
-          if [[ ! -f pnpm-lock.yaml ]]; then
-            echo "::error::package.json exists but pnpm-lock.yaml is missing."
-            exit 1
-          fi
-
-          pnpm install --frozen-lockfile
-          pnpm check
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Audit the complete dependency graph
         run: pnpm audit --audit-level high
+
+      - name: Run the complete quality gate
+        run: pnpm check
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Test X-01 in Chromium
+        run: pnpm test:e2e
+
+      - name: Upload Playwright diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-diagnostics
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Smoke-test Static Assets and API routing
         shell: bash

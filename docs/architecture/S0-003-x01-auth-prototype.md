@@ -24,12 +24,13 @@ Le navigateur ne pourra activer Supabase Auth que lorsqu’une continuation serv
 
 - `packages/schemas/src/auth.test.ts` ferme l’ensemble des intentions publiques et refuse notamment `PLATFORM` et `ADMIN`.
 - `apps/web/src/App.test.tsx` vérifie les trois portes sans présélection, l’absence de porte Plateforme, les trois variantes de panneau, l’ordre Google/e-mail/OTP et tous les messages neutres.
+- `e2e/x01.spec.ts` rejoue dans Chromium le contrat initial, l’ordre clavier, les retours de focus, l’e-mail invalide, le hors-ligne et la frontière responsive 599/600 px sans débordement.
 - Le build Vite/PWA et les contrôles TypeScript/lint restent obligatoires dans `pnpm check`.
 
-Un contrôle exploratoire Playwright local a également vérifié le **2026-08-27** le reflow à 320 et 600 px, le lien d’évitement, la sélection souris, l’ordre clavier radio → Google, le repli Google avec focus e-mail, l’erreur e-mail et la restitution du focus à la porte précédente. Cette vérification aide la revue mais ne remplace pas encore une suite E2E versionnée en CI.
+La suite E2E est configurée par `playwright.config.ts`, démarre une preview neuve du build PWA et s’exécute dans le contrôle GitHub obligatoire après installation de Chromium. Un échec CI conserve les diagnostics Playwright pendant sept jours. En local : `pnpm exec playwright install chromium`, puis `pnpm test:e2e`.
 
 ## Hors portée de cette preuve
 
 Ce prototype ne prouve pas Google OAuth/PKCE, l’OTP, SMTP, la convergence d’identité, les callbacks, `X-02..X-06`, MFA, une invitation ou une autorisation métier. Il ne justifie donc ni le passage de `GATE-0`, ni l’état vert de `S0-003` ou `S0-007`. L’activation réseau nécessitera la configuration Auth expurgée par environnement, la continuation serveur, les tests réels et les décisions de configuration encore ouvertes.
 
-Le contrôle Google devra également être validé avec les éléments de marque officiels au branchement du fournisseur. Le prompt accessible de mise à jour PWA reste un incrément séparé : aucune mise à jour ne devra interrompre silencieusement une saisie Auth ou OTP.
+Le contrôle Google devra également être validé avec les éléments de marque officiels au branchement du fournisseur. Le prompt accessible de mise à jour PWA reste un incrément séparé : aucune mise à jour ne devra interrompre silencieusement une saisie Auth ou OTP. Les E2E actuels ne remplacent pas encore un audit lecteur d’écran, zoom 200 % et reflow 400 % complet.
