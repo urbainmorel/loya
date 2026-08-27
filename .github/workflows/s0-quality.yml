@@ -56,7 +56,7 @@ jobs:
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Test X-01 in Chromium
+      - name: Test browser flows in Chromium
         run: pnpm test:e2e
 
       - name: Upload Playwright diagnostics on failure

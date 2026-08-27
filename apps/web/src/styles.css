@@ -80,6 +80,50 @@ label {
   transform: translateY(0);
 }
 
+.pwa-update {
+  display: grid;
+  width: min(100% - 2rem, 42rem);
+  margin: 1rem auto 0;
+  padding: 1rem;
+  gap: 1rem;
+  border: 0.0625rem solid var(--loya-muted);
+  border-radius: 1rem;
+  color: var(--loya-ink);
+  background: var(--color-primary-50);
+  box-shadow: 0 0.75rem 2rem rgb(7 25 35 / 8%);
+}
+
+.pwa-update__title,
+.pwa-update__message,
+.pwa-update__detail {
+  margin: 0;
+}
+
+.pwa-update__title {
+  color: var(--loya-navy-strong);
+  font-weight: 800;
+}
+
+.pwa-update__message {
+  margin-top: 0.25rem;
+}
+
+.pwa-update__detail {
+  margin-top: 0.25rem;
+  color: var(--color-neutral-700);
+}
+
+.pwa-update__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.pwa-update button:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
 .auth-shell {
   width: min(100% - 2rem, 68rem);
   min-height: 100vh;

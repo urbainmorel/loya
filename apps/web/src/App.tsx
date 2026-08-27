@@ -7,6 +7,7 @@ import {
   unavailableFeedback,
   type AuthFeedback,
 } from "./auth-model";
+import { PwaUpdatePrompt, type PwaUpdatePromptProps } from "./PwaUpdatePrompt";
 
 function DoorIcon({ intent }: { intent: AuthIntent }) {
   if (intent === "AGENCY") {
@@ -166,7 +167,11 @@ export function AuthAccessPanel({
   );
 }
 
-export function App() {
+interface AppProps {
+  pwaUpdate?: PwaUpdatePromptProps;
+}
+
+export function App({ pwaUpdate }: AppProps = {}) {
   const [selectedIntent, setSelectedIntent] = useState<AuthIntent | null>(null);
   const doorInputs = useRef<Partial<Record<AuthIntent, HTMLInputElement>>>({});
 
@@ -175,6 +180,7 @@ export function App() {
       <a className="skip-link" href="#main-content">
         Aller au contenu
       </a>
+      {pwaUpdate ? <PwaUpdatePrompt {...pwaUpdate} /> : null}
       <main className="auth-shell" id="main-content" tabIndex={-1}>
         <header className="brand" aria-label="Loya">
           <span className="brand__mark" aria-hidden="true">
