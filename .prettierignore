@@ -13,3 +13,4 @@ pnpm-lock.yaml
 **/*.svg
 **/worker-configuration.d.ts
 supabase/**/*.sql
+apps/worker/poc/**/*.sql

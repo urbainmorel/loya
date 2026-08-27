@@ -53,15 +53,115 @@ jobs:
       - name: Run the complete quality gate
         run: pnpm check
 
-      - name: Verify the Supabase baseline with pgTAP
+      - name: Verify Supabase baseline and OQ-002 read path
         id: supabase_db
         shell: bash
         run: |
           set -euo pipefail
+          key_file=""
+          worker_env=""
+          worker_pid=""
+
+          cleanup() {
+            if [[ -n "$worker_pid" ]]; then
+              kill -- "-$worker_pid" 2>/dev/null || true
+              wait "$worker_pid" 2>/dev/null || true
+            fi
+            if [[ -n "$key_file" && -f "$key_file" ]]; then
+              rm -f -- "$key_file"
+            fi
+            if [[ -n "$worker_env" && -f "$worker_env" ]]; then
+              rm -f -- "$worker_env"
+            fi
+          }
+          trap cleanup EXIT INT TERM
+
           pnpm exec supabase start \
-            --exclude gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor \
+            --exclude realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor \
+            --ignore-health-check \
             --yes > "$RUNNER_TEMP/supabase-start.log" 2>&1
           pnpm test:database
+
+          auth_ready=0
+          for attempt in {1..60}; do
+            auth_status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+              http://127.0.0.1:54321/auth/v1/health || true)"
+            if [[ "$auth_status" == "200" ]]; then
+              auth_ready=1
+              break
+            fi
+            sleep 0.5
+          done
+          if [[ "$auth_ready" -ne 1 ]]; then
+            echo "Supabase Auth did not become ready."
+            exit 1
+          fi
+
+          key_file="$(mktemp "$RUNNER_TEMP/loya-oq002-keys.XXXXXX")"
+          chmod 600 "$key_file"
+          pnpm exec supabase status -o json | node --input-type=module -e '
+            const chunks = [];
+            for await (const chunk of process.stdin) chunks.push(chunk);
+            const status = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+            const keys = [
+              status.PUBLISHABLE_KEY,
+              status.ANON_KEY,
+              status.SERVICE_ROLE_KEY,
+            ];
+            if (!keys.every((value) => typeof value === "string" && value.length > 0)) {
+              throw new Error("Required local Supabase keys are absent.");
+            }
+            process.stdout.write(`${keys[0]}\n${keys[1]}\n${keys[2]}\n`);
+          ' > "$key_file"
+          mapfile -t local_keys < "$key_file"
+          if [[ "${#local_keys[@]}" -ne 3 ]]; then
+            echo "Unexpected local Supabase key output."
+            exit 1
+          fi
+          publishable_key="${local_keys[0]}"
+          anon_key="${local_keys[1]}"
+          service_role_key="${local_keys[2]}"
+          echo "::add-mask::$publishable_key"
+          echo "::add-mask::$anon_key"
+          echo "::add-mask::$service_role_key"
+
+          OQ002_SUPABASE_URL=http://127.0.0.1:54321 \
+            OQ002_SUPABASE_SERVICE_ROLE_KEY="$service_role_key" \
+            pnpm setup:oq002:auth
+
+          docker exec -i supabase_db_loya \
+            psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 \
+            < apps/worker/poc/oq-002/setup.sql
+
+          verify_output="$(docker exec -i supabase_db_loya \
+            psql -XAtq -U postgres -d postgres -v ON_ERROR_STOP=1 \
+            < apps/worker/poc/oq-002/verify.sql)"
+          printf '%s\n' "$verify_output"
+          if grep -q '^not ok' <<< "$verify_output" \
+            || ! grep -q '^1\.\.8$' <<< "$verify_output"; then
+            echo "OQ-002 SQL assertions failed."
+            exit 1
+          fi
+
+          worker_env="$(mktemp "$RUNNER_TEMP/loya-oq002-worker.XXXXXX.env")"
+          chmod 600 "$worker_env"
+          printf 'SUPABASE_PUBLISHABLE_KEY="%s"\n' "$publishable_key" > "$worker_env"
+          setsid pnpm exec wrangler dev \
+            --config apps/worker/poc/oq-002/wrangler.jsonc \
+            --ip 127.0.0.1 \
+            --port 8788 \
+            --env-file "$worker_env" \
+            --show-interactive-dev-session=false \
+            --log-level warn \
+            > "$RUNNER_TEMP/oq002-worker.log" 2>&1 &
+          worker_pid=$!
+
+          OQ002_WORKER_URL=http://127.0.0.1:8788 \
+            OQ002_SUPABASE_URL=http://127.0.0.1:54321 \
+            OQ002_SUPABASE_PUBLISHABLE_KEY="$publishable_key" \
+            OQ002_SUPABASE_ANON_KEY="$anon_key" \
+            OQ002_SUPABASE_SERVICE_ROLE_KEY="$service_role_key" \
+            pnpm test:oq002
 
       - name: Show Supabase database diagnostics
         if: failure() && steps.supabase_db.outcome == 'failure'
@@ -70,12 +170,24 @@ jobs:
           if [[ -f "$RUNNER_TEMP/supabase-start.log" ]]; then
             node scripts/redact-supabase-log.mjs "$RUNNER_TEMP/supabase-start.log"
           fi
+          if [[ -f "$RUNNER_TEMP/oq002-worker.log" ]]; then
+            node scripts/redact-supabase-log.mjs "$RUNNER_TEMP/oq002-worker.log"
+          fi
           docker ps -a --filter 'name=supabase_' --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
-          docker logs --tail 200 supabase_db_loya 2>&1 || true
+          for container in supabase_db_loya supabase_auth_loya supabase_rest_loya supabase_kong_loya; do
+            diagnostic="$RUNNER_TEMP/${container}.log"
+            if docker logs --tail 200 "$container" > "$diagnostic" 2>&1; then
+              node scripts/redact-supabase-log.mjs "$diagnostic"
+            fi
+            rm -f -- "$diagnostic"
+          done
 
       - name: Stop the Supabase database
         if: always() && steps.supabase_db.outcome != 'skipped'
-        run: pnpm exec supabase stop --project-id loya --no-backup || true
+        shell: bash
+        run: |
+          pnpm exec supabase stop --project-id loya --no-backup || true
+          rm -f -- "$RUNNER_TEMP/supabase-start.log" "$RUNNER_TEMP/oq002-worker.log"
 
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium

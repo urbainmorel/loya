@@ -8,7 +8,7 @@ export type OutboundFetch = (
   init?: RequestInit,
 ) => Promise<Response>;
 
-function assertSafeSupabaseUrl(value: string): URL {
+export function assertSafeSupabaseUrl(value: string): URL {
   const url = new URL(value);
   const isLocal = url.hostname === "127.0.0.1" || url.hostname === "localhost";
   const isSupabaseCloud = /^[a-z0-9-]+\.supabase\.co$/i.test(url.hostname);

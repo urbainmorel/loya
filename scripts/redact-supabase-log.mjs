@@ -13,7 +13,11 @@ export function redactSupabaseLog(source) {
       "[REDACTED]",
     )
     .replace(
-      /^(\s*(?:JWT secret|anon key|service_role key|Publishable key|Secret key|S3 Access Key|S3 Secret Key|SUPABASE_[A-Z0-9_]*(?:KEY|PASSWORD|SECRET|TOKEN))\s*[:=]\s*).*$/gimu,
+      /((?:JWT_SECRET|ANON_KEY|SERVICE_ROLE_KEY|PUBLISHABLE_KEY|SECRET_KEY|SUPABASE_[A-Z0-9_]*(?:KEY|PASSWORD|SECRET|TOKEN)|apikey|authorization)["']?\s*[:=]\s*(?:Bearer\s+)?["']?)[^"',\s}\]]+/giu,
+      "$1[REDACTED]",
+    )
+    .replace(
+      /^(\s*(?:JWT secret|anon key|service_role key|Publishable key|Secret key|S3 Access Key|S3 Secret Key|JWT_SECRET|ANON_KEY|SERVICE_ROLE_KEY|PUBLISHABLE_KEY|SECRET_KEY|SUPABASE_[A-Z0-9_]*(?:KEY|PASSWORD|SECRET|TOKEN)|apikey)\s*[:=]\s*).*$/gimu,
       "$1[REDACTED]",
     );
 }

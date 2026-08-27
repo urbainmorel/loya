@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../../node_modules/wrangler/config-schema.json",
+  "name": "loya-oq002-data-api-poc",
+  "main": "./index.ts",
+  "compatibility_date": "2026-08-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "SUPABASE_URL": "http://127.0.0.1:54321",
+  },
+  "secrets": {
+    "required": ["SUPABASE_PUBLISHABLE_KEY"],
+  },
+  "observability": {
+    "enabled": false,
+  },
+}

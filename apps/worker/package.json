@@ -7,7 +7,7 @@
     "dev": "wrangler dev --config ../../wrangler.jsonc --port 8787",
     "build": "wrangler deploy --dry-run --config ../../wrangler.jsonc --outdir ../../dist/worker",
     "test": "vitest run --config vitest.config.ts",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p test/tsconfig.json"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test/tsconfig.json && tsc --noEmit -p poc/oq-002/tsconfig.json"
   },
   "dependencies": {
     "@loya/schemas": "workspace:*",
