@@ -2,7 +2,7 @@
 
 begin;
 
-select plan(8);
+select plan(9);
 
 select ok(
   (
@@ -150,6 +150,11 @@ select is(
 reset role;
 select set_config('request.jwt.claim.sub', '', true);
 select set_config('request.jwt.claims', '{}', true);
+
+grant __s0_oq002_owner to postgres
+  with set true, inherit false, admin false
+  granted by postgres;
+
 set local role __s0_oq002_owner;
 
 select is(
@@ -159,6 +164,15 @@ select is(
 );
 
 reset role;
+
+revoke __s0_oq002_owner from postgres
+  granted by postgres;
+
+select ok(
+  not pg_has_role('postgres', '__s0_oq002_owner', 'SET')
+  and not pg_has_role('postgres', '__s0_oq002_owner', 'USAGE'),
+  'verification leaves no effective owner capability on postgres'
+);
 
 select * from finish();
 

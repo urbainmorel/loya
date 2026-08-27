@@ -138,7 +138,7 @@ jobs:
             < apps/worker/poc/oq-002/verify.sql)"
           printf '%s\n' "$verify_output"
           if grep -q '^not ok' <<< "$verify_output" \
-            || ! grep -q '^1\.\.8$' <<< "$verify_output"; then
+            || ! grep -q '^1\.\.9$' <<< "$verify_output"; then
             echo "OQ-002 SQL assertions failed."
             exit 1
           fi

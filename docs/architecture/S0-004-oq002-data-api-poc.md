@@ -32,7 +32,7 @@ GitHub runner
 
 ## Contrôles automatisés
 
-Huit assertions SQL vérifient :
+Neuf assertions SQL vérifient :
 
 - le propriétaire `NOLOGIN`, `NOINHERIT`, non privilégié et sans `BYPASSRLS` ;
 - la propriété des schémas, de la table et de la fonction ;
@@ -41,7 +41,8 @@ Huit assertions SQL vérifient :
 - l'absence de grant RPC pour `anon` et `service_role` ;
 - les seuls grants nécessaires pour `authenticated`, sans lecture de `subject_id` ni DML ;
 - la projection exacte de l'utilisateur A sous `auth.uid()` ;
-- l'application de la RLS au propriétaire de la table sans JWT.
+- l'application de la RLS au propriétaire de la table sans JWT ;
+- l'absence de capacité effective résiduelle après la délégation temporaire du test.
 
 Le test HTTP réel couvre neuf observations : Bearer absent, utilisateur A, utilisateur B avec une ressource située dans l'agence A, utilisateur sans rattachement, jeton `anon`, signature JWT altérée, schéma `private` refusé avec `PGRST106`, appel RPC direct et tentative d'ajouter `subject_id` refusée avec `PGRST202`.
 
