@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Loya</title>
+  <rect width="512" height="512" rx="112" fill="#0c2433"/>
+  <path d="M148 116h72v208h148v72H148z" fill="#f7f2eb"/>
+  <circle cx="349" cy="163" r="35" fill="#c7a55b"/>
+</svg>

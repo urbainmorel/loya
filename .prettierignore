@@ -1,0 +1,14 @@
+PRD_Gestion_Locative_IA_V1.md
+STI_Gestion_Locative_IA_V1.md
+DESIGN_Gestion_Locative_IA_V1.md
+ROADMAP_Gestion_Locative_IA_V1.md
+maquette écrans locataire.png
+docs/normative-manifest.json
+docs/traceability/requirements-matrix.json
+graphify-out/
+dist/
+coverage/
+results.sarif
+pnpm-lock.yaml
+**/*.svg
+**/worker-configuration.d.ts

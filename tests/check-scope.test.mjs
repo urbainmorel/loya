@@ -7,7 +7,10 @@ import { findScopeViolations } from "../scripts/check-scope.mjs";
 
 test("le contrôle accepte un socle conforme", async () => {
   const root = await mkdtemp(path.join(tmpdir(), "loya-scope-ok-"));
-  await writeFile(path.join(root, "package.json"), '{"dependencies":{"hono":"1.0.0"}}');
+  await writeFile(
+    path.join(root, "package.json"),
+    '{"dependencies":{"hono":"1.0.0"}}',
+  );
   assert.deepEqual(await findScopeViolations(root), []);
 });
 
@@ -15,7 +18,7 @@ test("le contrôle accepte la stack cible et ignore les exemples de docs/tests",
   const root = await mkdtemp(path.join(tmpdir(), "loya-scope-stack-ok-"));
   await mkdir(path.join(root, "apps", "web", "docs"), { recursive: true });
   await mkdir(path.join(root, "apps", "web", "tests"), { recursive: true });
-  await mkdir(path.join(root, "apps", "worker"), { recursive: true });
+  await mkdir(path.join(root, "apps", "worker", "src"), { recursive: true });
   await writeFile(
     path.join(root, "apps", "web", "package.json"),
     JSON.stringify({
@@ -25,9 +28,19 @@ test("le contrôle accepte la stack cible et ignore les exemples de docs/tests",
   );
   await writeFile(
     path.join(root, "apps", "worker", "package.json"),
-    JSON.stringify({ dependencies: { hono: "1.0.0" }, devDependencies: { wrangler: "1.0.0" } }),
+    JSON.stringify({
+      dependencies: { hono: "1.0.0" },
+      devDependencies: { wrangler: "1.0.0" },
+    }),
   );
-  await writeFile(path.join(root, "apps", "web", "docs", "excluded.ts"), "class OwnerPayout {}");
+  await writeFile(
+    path.join(root, "apps", "worker", "src", "worker-configuration.d.ts"),
+    "interface D1Database {}",
+  );
+  await writeFile(
+    path.join(root, "apps", "web", "docs", "excluded.ts"),
+    "class OwnerPayout {}",
+  );
   await writeFile(
     path.join(root, "apps", "web", "tests", "scope.test.ts"),
     "class MaintenanceRequest {}",
@@ -44,7 +57,11 @@ const excludedFeatures = [
   ["BI", "class AdvancedReport {}", /rapport avancé/],
   ["import", "class DataImport {}", /import/],
   ["export propriétaire", "function exportOwnerCsv() {}", /export CSV/],
-  ["remboursement fournisseur", "function initiateRefund() {}", /remboursement fournisseur/],
+  [
+    "remboursement fournisseur",
+    "function initiateRefund() {}",
+    /remboursement fournisseur/,
+  ],
   ["balance FedaPay", "class FedaPayBalance {}", /balance/],
   ["reversement propriétaire", "class OwnerPayout {}", /reversement/],
   ["cantonnement", "class RentEscrow {}", /cantonnement/],
@@ -60,7 +77,10 @@ test("le contrôle refuse chaque fonctionnalité explicitement exclue", async (t
     await t.test(name, async () => {
       const root = await mkdtemp(path.join(tmpdir(), "loya-scope-feature-ko-"));
       await mkdir(path.join(root, "packages", "core"), { recursive: true });
-      await writeFile(path.join(root, "packages", "core", "excluded.ts"), source);
+      await writeFile(
+        path.join(root, "packages", "core", "excluded.ts"),
+        source,
+      );
       const violations = await findScopeViolations(root);
       assert.equal(violations.length, 1);
       assert.match(violations[0], expected);
@@ -74,7 +94,9 @@ test("le contrôle refuse les substitutions de stack dans les manifests produit"
   await mkdir(path.join(root, "apps", "worker"), { recursive: true });
   await writeFile(
     path.join(root, "apps", "web", "package.json"),
-    JSON.stringify({ dependencies: { next: "1.0.0", "react-native": "1.0.0" } }),
+    JSON.stringify({
+      dependencies: { next: "1.0.0", "react-native": "1.0.0" },
+    }),
   );
   await writeFile(
     path.join(root, "apps", "worker", "package.json"),
@@ -87,7 +109,10 @@ test("le contrôle refuse les substitutions de stack dans les manifests produit"
       },
     }),
   );
-  await writeFile(path.join(root, "apps", "worker", "wrangler.toml"), "[[d1_databases]]\nbinding = 'DB'\n");
+  await writeFile(
+    path.join(root, "apps", "worker", "wrangler.toml"),
+    "[[d1_databases]]\nbinding = 'DB'\n",
+  );
 
   const result = (await findScopeViolations(root)).join("\n");
   for (const expected of [

@@ -43,7 +43,7 @@ jobs:
           version: 11.24.0
           run_install: false
 
-      - name: Run S0 checks when the workspace exists
+      - name: Run the complete quality gate when the workspace exists
         shell: bash
         run: |
           if [[ ! -f package.json ]]; then
@@ -57,4 +57,30 @@ jobs:
           fi
 
           pnpm install --frozen-lockfile
-          pnpm check:s0
+          pnpm check
+
+      - name: Audit the complete dependency graph
+        run: pnpm audit --audit-level high
+
+      - name: Smoke-test Static Assets and API routing
+        shell: bash
+        run: |
+          pnpm --filter @loya/worker dev > "$RUNNER_TEMP/loya-worker.log" 2>&1 &
+          worker_pid=$!
+          trap 'kill "$worker_pid" 2>/dev/null || true' EXIT
+
+          ready=0
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8787/v1/health > /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+
+          if [[ "$ready" -ne 1 ]]; then
+            cat "$RUNNER_TEMP/loya-worker.log"
+            exit 1
+          fi
+
+          node scripts/smoke-worker.mjs http://127.0.0.1:8787
