@@ -1,6 +1,6 @@
 # S0-004 — Harnais Supabase local et catalogue RLS
 
-- Statut : **HARNAIS IMPLÉMENTÉ — RLS LOYA NON PROUVÉE**
+- Statut : **HARNAIS CI PROUVÉ — RLS LOYA NON PROUVÉE**
 - Date : **2026-08-27**
 - Porte : **`GATE-0` reste rouge**
 
@@ -17,6 +17,8 @@ Il ne crée aucune migration, table, vue, policy, fonction, RPC ou grant Loya. L
 Docker s'exécute uniquement dans GitHub Actions, conformément aux instructions du dépôt. Le job `Quality and secrets` utilise la CLI Supabase verrouillée dans `pnpm-lock.yaml`, démarre uniquement PostgreSQL, rejoue l'état local avec `db reset`, exécute `supabase/tests/database` avec pgTAP, puis détruit le volume local.
 
 Le test `platform_smoke.test.sql` vérifie seulement la plateforme : extension pgTAP, schéma `auth`, table `auth.users`, puis présence, type UUID et clé primaire de `auth.users.id`. Il ne compte pas comme test RLS Loya et ne peut pas verdir `S0-004`.
+
+Preuve distante obtenue le 2026-08-27 : la [PR #9, exécution GitHub Actions 33076539448](https://github.com/urbainmorel/loya/actions/runs/33076539448) a remis la base locale à zéro puis exécuté `1` fichier et `6` assertions pgTAP avec `Result: PASS`. Le check obligatoire complet `Quality and secrets` a terminé en succès en 3 min 04 s, E2E Chromium et smoke Worker inclus.
 
 ## Catalogue allow/deny à matérialiser
 
