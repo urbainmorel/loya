@@ -1,9 +1,10 @@
 import type { AuthIntent } from "@loya/schemas";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { App, AuthAccessPanel } from "./App";
 import { AUTH_DOORS, AUTH_FEEDBACK, unavailableFeedback } from "./auth-model";
+import { PwaUpdatePrompt, type PwaUpdatePhase } from "./PwaUpdatePrompt";
 
 describe("X-01", () => {
   it("rend exactement trois portes publiques sans présélection", () => {
@@ -63,5 +64,86 @@ describe("X-01", () => {
     expect(AUTH_FEEDBACK["provider-unavailable"].text).toContain(
       "continuer par e-mail",
     );
+  });
+});
+
+describe("mise à jour PWA", () => {
+  it.each<{
+    phase: PwaUpdatePhase;
+    message: string;
+    action: string;
+    dismissAction: string | null;
+  }>([
+    {
+      phase: "available",
+      message: "Une nouvelle version de Loya est disponible.",
+      action: "Mettre à jour et recharger",
+      dismissAction: "Plus tard",
+    },
+    {
+      phase: "updating",
+      message: "Mise à jour en cours…",
+      action: "Mise à jour…",
+      dismissAction: "Continuer sans recharger",
+    },
+    {
+      phase: "ready",
+      message: "La nouvelle version est prête. Rechargez pour l’utiliser.",
+      action: "Recharger maintenant",
+      dismissAction: null,
+    },
+    {
+      phase: "error",
+      message: "La mise à jour n’a pas pu être appliquée. Réessayez.",
+      action: "Mettre à jour et recharger",
+      dismissAction: "Plus tard",
+    },
+  ])("rend l’état $phase sans action automatique", (state) => {
+    const onDismiss = vi.fn();
+    const onUpdate = vi.fn();
+    const html = renderToStaticMarkup(
+      <PwaUpdatePrompt
+        phase={state.phase}
+        onDismiss={onDismiss}
+        onUpdate={onUpdate}
+      />,
+    );
+
+    expect(html).toContain('aria-labelledby="pwa-update-title"');
+    expect(html).not.toContain("aria-busy");
+    expect(html).toContain('role="status"');
+    expect(html).toContain('aria-live="polite"');
+    expect(html).not.toContain('role="alert"');
+    expect(html).not.toContain('aria-live="assertive"');
+    expect(html).toContain(state.message);
+    expect(html).toContain(state.action);
+    if (state.dismissAction) {
+      expect(html).toContain(state.dismissAction);
+    } else {
+      expect(html).not.toContain("Plus tard");
+      expect(html).not.toContain("Continuer sans recharger");
+    }
+    expect(onDismiss).not.toHaveBeenCalled();
+    expect(onUpdate).not.toHaveBeenCalled();
+  });
+
+  it("place l’annonce après le lien d’évitement et avant le contenu", () => {
+    const html = renderToStaticMarkup(
+      <App
+        pwaUpdate={{
+          phase: "available",
+          onDismiss: vi.fn(),
+          onUpdate: vi.fn(),
+        }}
+      />,
+    );
+
+    expect(html.indexOf("Aller au contenu")).toBeLessThan(
+      html.indexOf("Mise à jour de Loya"),
+    );
+    expect(html.indexOf("Mise à jour de Loya")).toBeLessThan(
+      html.indexOf('id="main-content"'),
+    );
+    expect(html.match(/<h1/g)).toHaveLength(1);
   });
 });
