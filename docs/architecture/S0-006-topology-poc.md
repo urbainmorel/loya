@@ -200,18 +200,18 @@ Après fermeture de `OQ-002` et `OQ-010`, un test d'intégration dédié devra o
 
 ## 9. Critères de sortie du POC
 
-| Preuve                                               | Statut actuel                     | Condition de réussite                      |
-| ---------------------------------------------------- | --------------------------------- | ------------------------------------------ |
-| Diagramme et responsabilités                         | **DOCUMENTÉ, NON EXÉCUTABLE**     | revue architecture de ce document          |
-| Build React/Vite servi par Static Assets             | **VERT local et externe**         | build + réponses HTTP + CSP prouvés        |
-| Hono `/v1` same-origin et séparation du fallback SPA | **VERT local et externe**         | `/v1`, inconnue et health testés           |
-| Secret uniquement en binding Worker                  | **PARTIEL — aucun secret activé** | CI Gitleaks de la PR encore à obtenir      |
-| Worker → Supabase sous JWT/RLS                       | **BLOQUÉ / NON PROUVÉ**           | `OQ-002` fermée + POC allow/deny           |
-| Outbox → Supabase Queues atomique                    | **BLOQUÉ / NON PROUVÉ**           | `OQ-010` fermée + migration et crash tests |
-| R2, Storage, Browser Run                             | **OFF / NON PROUVÉ**              | chaque porte STI §20 satisfaite            |
-| Worker → FedaPay                                     | **OFF / NON PROUVÉ**              | `S0-002`, contrat et sandbox satisfaits    |
-| Régions, limites CPU/temps, coûts, SLO               | **NON PROUVÉ**                    | valeurs approuvées, mesures et runbooks    |
-| Absence de stack interdite                           | **VERT sur le squelette**         | contrôle automatique maintenu en CI        |
+| Preuve                                               | Statut actuel                     | Condition de réussite                                 |
+| ---------------------------------------------------- | --------------------------------- | ----------------------------------------------------- |
+| Diagramme et responsabilités                         | **DOCUMENTÉ, NON EXÉCUTABLE**     | revue architecture de ce document                     |
+| Build React/Vite servi par Static Assets             | **VERT local et externe**         | build + réponses HTTP + CSP prouvés                   |
+| Hono `/v1` same-origin et séparation du fallback SPA | **VERT local et externe**         | `/v1`, inconnue et health testés                      |
+| Secret uniquement en binding Worker                  | **PARTIEL — aucun secret activé** | Gitleaks PR `#5` vert ; première activation à prouver |
+| Worker → Supabase sous JWT/RLS                       | **BLOQUÉ / NON PROUVÉ**           | `OQ-002` fermée + POC allow/deny                      |
+| Outbox → Supabase Queues atomique                    | **BLOQUÉ / NON PROUVÉ**           | `OQ-010` fermée + migration et crash tests            |
+| R2, Storage, Browser Run                             | **OFF / NON PROUVÉ**              | chaque porte STI §20 satisfaite                       |
+| Worker → FedaPay                                     | **OFF / NON PROUVÉ**              | `S0-002`, contrat et sandbox satisfaits               |
+| Régions, limites CPU/temps, coûts, SLO               | **NON PROUVÉ**                    | valeurs approuvées, mesures et runbooks               |
+| Absence de stack interdite                           | **VERT sur le squelette**         | contrôle automatique maintenu en CI                   |
 
 ## 10. Conclusion GATE-0
 
