@@ -2,7 +2,15 @@
 
 begin;
 
-set local search_path = pg_catalog, extensions;
+select pg_catalog.set_config(
+  'search_path',
+  pg_catalog.format('pg_catalog,%I', namespace_row.nspname),
+  true
+)
+from pg_catalog.pg_extension as extension_row
+join pg_catalog.pg_namespace as namespace_row
+  on namespace_row.oid = extension_row.extnamespace
+where extension_row.extname = 'pgtap';
 
 select plan(9);
 
