@@ -8,30 +8,30 @@ Une question n'est close que par une décision explicite et traçable indiquant 
 
 ## Synthèse des questions et décisions
 
-| ID | Statut décisionnel | Décision à obtenir ou retenue | Bloque au minimum | Responsable de décision attendu |
-|---|---|---|---|---|
-| `OQ-001` | **RÉSOLUE — A**, 2026-08-27 | Applications → points d'entrée publics des packages ; jamais packages → applications | Preuve d'application : `S0-006`, `S1-001` | Architecture |
-| `OQ-002` | **OUVERTE** | Mécanisme Worker → SQL/RPC sous identité utilisateur | `S0-004`, `S1-004` | Architecture + sécurité |
-| `OQ-003` | **RÉSOLUE — B**, 2026-08-27 | Seul un échec technique pré-acceptation laisse l'ordre `CREATED` | Preuve d'application : `S0-002`, `S3-003`, `S3-005` | Produit paiement + architecture |
-| `OQ-004` | **RÉSOLUE — A**, 2026-08-27 | CTA long sur bandeau et confirmation `A-12` | Preuve de correction : `S0-007`, `S4-003` | Produit + Design |
-| `OQ-005` | **RÉSOLUE — A**, 2026-08-27 | Cocher aussi 600 000 FCFA ; principal de 1 350 000 FCFA et total égal au principal plus les frais du devis valide | Preuve de correction : `S0-007`, `S3-001`, `S4-001` | Produit + Finance + Design |
-| `OQ-006` | **RÉSOLUE — A**, 2026-08-27 | Maquette corrigée ; ordre/champs/libellés du DESIGN appliqués strictement | Preuve de correction : `S0-007`, `S3-001`, `S4-001` | Produit + Design |
-| `OQ-007` | **RÉSOLUE — A**, 2026-08-27 | Celtiis Cash remplace Orange Money dans la maquette | Preuve de correction : `S0-002`, `S0-007` | Produit paiement + Design |
-| `OQ-008` | **RÉSOLUE — A**, 2026-08-27 | Libellés, CTA et dates de la maquette corrigés selon le DESIGN | Preuve de correction : `S0-007`, `S4-001` | Produit + Design |
-| `OQ-009` | **OUVERTE** | Issue si le contrat FedaPay ne prouve pas toutes les capacités | `GATE-0`, `S0-002` | Commanditaire + Paiement |
-| `OQ-010` | **OUVERTE** | Transaction outbox + Supabase Queues et identité d'appel | `S0-004`, `S0-006`, `S1-007` | Architecture + sécurité |
-| `OQ-011` | **OUVERTE** | Politique réelle de rollback des migrations | `S0-001`, `S1-003`, `S1-004` | Architecture + exploitation |
-| `OQ-012` | **OUVERTE** | Motifs et autorisations d'annulation d'une échéance | `S1-003`, `S2-005` | Produit + Finance |
-| `OQ-013` | **OUVERTE** | Instant exact de passage à `OVERDUE` | `S2-005`, `S4-004` | Produit + Finance |
-| `OQ-014` | **OUVERTE** | Valeurs de configuration non chiffrées | `GATE-0` puis chaque activation concernée | Sécurité + Exploitation + Produit |
-| `OQ-015` | **OUVERTE** | Durée de rétention, IAM et purge du journal R2 | `GATE-0`, premier appel FedaPay | Sécurité + Conformité + Exploitation |
-| `OQ-016` | **OUVERTE** | Preuve technique de fraîcheur MFA à cinq minutes | `S0-003`, `S1-005`, `S1-007` | Sécurité + Plateforme |
-| `OQ-017` | **OUVERTE** | Champs monétaires autorisant exactement zéro | `S0-005`, migrations financières | Produit + Finance |
-| `OQ-018` | **OUVERTE** | Calendrier, échéance et annulation des relevés plateforme | `S0-005`, `S3-008` | Produit + Finance + Exploitation |
-| `OQ-019` | **OUVERTE** | Configuration initiale des paiements manuels et preuves | `S2-001`, `S3-006` | Produit + Finance + Exploitation |
-| `OQ-020` | **OUVERTE** | Décisions signées APDP, régions et rétention | `GATE-0`, `S0-008` | Responsable conformité |
-| `OQ-021` | **OUVERTE** | Seuils signés SLO, RPO et RTO | `GATE-0`, `S0-009` | Produit + Exploitation |
-| `OQ-022` | **OUVERTE** | Mentions réglementaires des reçus | `GATE-0`, `S0-008`, `S4-001` | Finance + Conformité |
+| ID       | Statut décisionnel          | Décision à obtenir ou retenue                                                                                     | Bloque au minimum                                   | Responsable de décision attendu      |
+| -------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------ |
+| `OQ-001` | **RÉSOLUE — A**, 2026-08-27 | Applications → points d'entrée publics des packages ; jamais packages → applications                              | Prouvée par `check:boundaries` dans `S0-006`        | Architecture                         |
+| `OQ-002` | **OUVERTE**                 | Mécanisme Worker → SQL/RPC sous identité utilisateur                                                              | `S0-004`, `S1-004`                                  | Architecture + sécurité              |
+| `OQ-003` | **RÉSOLUE — B**, 2026-08-27 | Seul un échec technique pré-acceptation laisse l'ordre `CREATED`                                                  | Preuve d'application : `S0-002`, `S3-003`, `S3-005` | Produit paiement + architecture      |
+| `OQ-004` | **RÉSOLUE — A**, 2026-08-27 | CTA long sur bandeau et confirmation `A-12`                                                                       | Preuve de correction : `S0-007`, `S4-003`           | Produit + Design                     |
+| `OQ-005` | **RÉSOLUE — A**, 2026-08-27 | Cocher aussi 600 000 FCFA ; principal de 1 350 000 FCFA et total égal au principal plus les frais du devis valide | Preuve de correction : `S0-007`, `S3-001`, `S4-001` | Produit + Finance + Design           |
+| `OQ-006` | **RÉSOLUE — A**, 2026-08-27 | Maquette corrigée ; ordre/champs/libellés du DESIGN appliqués strictement                                         | Preuve de correction : `S0-007`, `S3-001`, `S4-001` | Produit + Design                     |
+| `OQ-007` | **RÉSOLUE — A**, 2026-08-27 | Celtiis Cash remplace Orange Money dans la maquette                                                               | Preuve de correction : `S0-002`, `S0-007`           | Produit paiement + Design            |
+| `OQ-008` | **RÉSOLUE — A**, 2026-08-27 | Libellés, CTA et dates de la maquette corrigés selon le DESIGN                                                    | Preuve de correction : `S0-007`, `S4-001`           | Produit + Design                     |
+| `OQ-009` | **OUVERTE**                 | Issue si le contrat FedaPay ne prouve pas toutes les capacités                                                    | `GATE-0`, `S0-002`                                  | Commanditaire + Paiement             |
+| `OQ-010` | **OUVERTE**                 | Transaction outbox + Supabase Queues et identité d'appel                                                          | `S0-004`, `S0-006`, `S1-007`                        | Architecture + sécurité              |
+| `OQ-011` | **OUVERTE**                 | Politique réelle de rollback des migrations                                                                       | `S0-001`, `S1-003`, `S1-004`                        | Architecture + exploitation          |
+| `OQ-012` | **OUVERTE**                 | Motifs et autorisations d'annulation d'une échéance                                                               | `S1-003`, `S2-005`                                  | Produit + Finance                    |
+| `OQ-013` | **OUVERTE**                 | Instant exact de passage à `OVERDUE`                                                                              | `S2-005`, `S4-004`                                  | Produit + Finance                    |
+| `OQ-014` | **OUVERTE**                 | Valeurs de configuration non chiffrées                                                                            | `GATE-0` puis chaque activation concernée           | Sécurité + Exploitation + Produit    |
+| `OQ-015` | **OUVERTE**                 | Durée de rétention, IAM et purge du journal R2                                                                    | `GATE-0`, premier appel FedaPay                     | Sécurité + Conformité + Exploitation |
+| `OQ-016` | **OUVERTE**                 | Preuve technique de fraîcheur MFA à cinq minutes                                                                  | `S0-003`, `S1-005`, `S1-007`                        | Sécurité + Plateforme                |
+| `OQ-017` | **OUVERTE**                 | Champs monétaires autorisant exactement zéro                                                                      | `S0-005`, migrations financières                    | Produit + Finance                    |
+| `OQ-018` | **OUVERTE**                 | Calendrier, échéance et annulation des relevés plateforme                                                         | `S0-005`, `S3-008`                                  | Produit + Finance + Exploitation     |
+| `OQ-019` | **OUVERTE**                 | Configuration initiale des paiements manuels et preuves                                                           | `S2-001`, `S3-006`                                  | Produit + Finance + Exploitation     |
+| `OQ-020` | **OUVERTE**                 | Décisions signées APDP, régions et rétention                                                                      | `GATE-0`, `S0-008`                                  | Responsable conformité               |
+| `OQ-021` | **OUVERTE**                 | Seuils signés SLO, RPO et RTO                                                                                     | `GATE-0`, `S0-009`                                  | Produit + Exploitation               |
+| `OQ-022` | **OUVERTE**                 | Mentions réglementaires des reçus                                                                                 | `GATE-0`, `S0-008`, `S4-001`                        | Finance + Conformité                 |
 
 ## Détail des questions
 
@@ -41,7 +41,7 @@ Une question n'est close que par une décision explicite et traçable indiquant 
 
 **Statut décisionnel.** **RÉSOLUE — choix A**. Approbation explicite de l'utilisateur le **2026-08-27** : les applications peuvent importer uniquement les points d'entrée publics des packages ; aucun package ne peut importer une application.
 
-**Preuve d'application.** **NON PROUVÉE** : aucun squelette applicatif ni test de frontière ne matérialise encore cette décision.
+**Preuve d'application.** **PROUVÉE POUR LE SOCLE COURANT** : le monorepo contient `apps/web`, `apps/worker` et `packages/schemas`. `check:boundaries` refuse les imports package → application, application → application, deep imports, chemins traversants et cycles ; ses tests positifs/négatifs passent dans `pnpm check` et en CI obligatoire. Toute nouvelle arête reste soumise au même contrôle.
 
 **Historique des choix proposés :**
 
@@ -49,7 +49,7 @@ Une question n'est close que par une décision explicite et traçable indiquant 
 - **B.** Interdiction littérale de tout import d'une application vers un package ; préciser alors le mécanisme normatif d'assemblage des packages dans les applications.
 - **C.** Publier un graphe d'import allowlisté, arête par arête, qui remplace l'interprétation directionnelle de cette phrase.
 
-**Suite exigée.** La question décisionnelle est close. Les alias TypeScript, règles de frontière, builds et tests de cycles doivent encore prouver une arête autorisée, une arête interdite et un cycle ; cette absence de preuve ne rouvre pas la décision.
+**Suite exigée.** La question décisionnelle est close et la preuve est produite : les alias TypeScript, règles de frontière, builds et tests couvrent une arête autorisée, une arête interdite et un cycle. Le contrôle `check:boundaries` doit rester obligatoire à chaque évolution du graphe ; une régression de preuve ne rouvrirait pas la décision.
 
 ### `OQ-002` — Worker → SQL/RPC sous identité utilisateur
 
