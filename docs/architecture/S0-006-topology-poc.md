@@ -89,6 +89,18 @@ Les flèches pointillées représentent des intégrations cibles **désactivées
 
 La PWA collecte une intention et affiche une projection ; elle ne confirme pas un paiement et ne devient jamais source de vérité financière (STI §1.1, l. 42–50). En perte réseau, toute future confirmation financière doit être désactivée avec reprise explicite, sans `Background Sync` (STI §15, l. 1058–1062 ; `NFR-005`).
 
+### Décision d’implémentation — mise à jour du shell PWA
+
+Les sources normatives exigent une PWA et un cache prudent, mais ne prescrivent ni stratégie de mise à jour du Service Worker, ni `skipWaiting`, ni rechargement automatique, ni libellé de prompt. Le comportement suivant est donc une décision d’implémentation compatible, et non une nouvelle règle produit :
+
+- `registerType: "prompt"` est conservé ; `autoUpdate`, `clientsClaim` et l’activation automatique ne sont pas introduits ;
+- une version en attente est annoncée dans le flux par un prompt non modal et accessible, sans déplacement de focus ;
+- seul le clic « Mettre à jour et recharger » arme le rechargement de l’onglet courant ; une activation venue d’un autre onglet affiche « Recharger maintenant » sans navigation silencieuse ;
+- « Plus tard » masque une version encore en attente et « Continuer sans recharger » annule l’intention de navigation si l’activation tarde ; une version déjà activée reste signalée jusqu’au rechargement explicite ;
+- aucune saisie Auth/OTP n’est sérialisée pour survivre au rechargement, et la politique de cache reste inchangée : shell public pré-caché, `runtimeCaching: []` et `/v1` exclu du fallback de navigation.
+
+La preuve E2E à trois onglets force un vrai cycle `waiting` → `controlling` sur le build de production. Elle vérifie, sur ce cycle, l’onglet qui accepte, celui qui diffère, celui dont le contrôle focalisé disparaît, ainsi que la conservation des saisies e-mail `X-01` et l’absence de navigation sans consentement. Elle ne prouve pas encore `X-02` ni une saisie OTP ; ce scénario devra être répété lorsque cet écran existera.
+
 ## 5. Frontières de confiance
 
 | Frontière                     | Entrées non fiables                               | Contrôles exigés                                                                           | Données/secrets interdits                                                   |
@@ -185,7 +197,8 @@ Le scan doit être complété par le scanner de secrets CI. Une sortie de comman
 
 | Preuve                          | Résultat                                                                                                                                        |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm check`                    | `32/32` garde-fous, `2/2` tests unitaires, `7/7` tests runtime Workers, format/lint/types et builds réussis                                     |
+| `pnpm check`                    | `32/32` garde-fous, `12/12` tests unitaires, `7/7` tests runtime Workers, format/lint/types et builds réussis                                   |
+| `pnpm test:e2e`                 | `6/6` scénarios Chromium, dont un cycle réel de mise à jour PWA à trois onglets avec rechargement consenti                                      |
 | `pnpm audit --audit-level high` | aucune vulnérabilité connue après correction du graphe transitif                                                                                |
 | `wrangler dev`                  | `/` répond `200 text/html` avec CSP ; `/v1/health` répond `200 application/json` ; `/v1` et une route inconnue répondent `404 application/json` |
 | Corrélation                     | le Worker remplace un `X-Request-Id` fourni par le client par un UUID serveur et le renvoie dans le header, le JSON et les logs canonisés       |
