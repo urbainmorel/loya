@@ -1,0 +1,3 @@
+# Copier vers .dev.vars pour le développement local. Ne jamais committer les valeurs réelles.
+SUPABASE_URL=https://project-ref.supabase.co
+SUPABASE_PUBLISHABLE_KEY=replace-with-a-rotated-publishable-key

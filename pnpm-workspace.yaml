@@ -1,0 +1,23 @@
+packages:
+  - apps/*
+  - packages/*
+overrides:
+  "@vite-pwa/assets-generator>sharp": 0.35.2
+allowBuilds:
+  esbuild: true
+  sharp: false
+  workerd: true
+minimumReleaseAgeExclude:
+  - "@cloudflare/vitest-plugin@1.1.1"
+  - "@supabase/cli-darwin-arm64@2.116.0"
+  - "@supabase/cli-darwin-x64@2.116.0"
+  - "@supabase/cli-linux-arm64-musl@2.116.0"
+  - "@supabase/cli-linux-arm64@2.116.0"
+  - "@supabase/cli-linux-x64-musl@2.116.0"
+  - "@supabase/cli-linux-x64@2.116.0"
+  - "@supabase/cli-windows-arm64@2.116.0"
+  - "@supabase/cli-windows-x64@2.116.0"
+  - "@types/node@24.13.3"
+  - miniflare@5.20260826.0-alpha
+  - supabase@2.116.0
+  - wrangler@4.127.0

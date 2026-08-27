@@ -2,7 +2,10 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const projectRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
 
 export const DOCUMENTS = {
   PRD: "PRD_Gestion_Locative_IA_V1.md",
@@ -27,16 +30,21 @@ const sorted = (values) => [...values].sort();
 
 function groupIds(ids, families) {
   return Object.fromEntries(
-    families.map((family) => [family, sorted(ids.filter((id) => id.startsWith(`${family}-`)))]),
+    families.map((family) => [
+      family,
+      sorted(ids.filter((id) => id.startsWith(`${family}-`))),
+    ]),
   );
 }
 
 function extractReferences(text, families, digits) {
   const familyPattern = families.join("|");
   const references = new Set(
-    [...text.matchAll(new RegExp(`\\b(?:${familyPattern})-\\d{${digits}}\\b`, "g"))].map(
-      ([id]) => id,
-    ),
+    [
+      ...text.matchAll(
+        new RegExp(`\\b(?:${familyPattern})-\\d{${digits}}\\b`, "g"),
+      ),
+    ].map(([id]) => id),
   );
   const ranges = new RegExp(
     `\\b(${familyPattern})-(\\d{${digits}})\\b\`?\\s+(?:à|au|–|—)\\s+\`?\\1-(\\d{${digits}})\\b`,
@@ -56,7 +64,9 @@ function extractReferences(text, families, digits) {
 
 function extractRequirementDefinitions(prd) {
   return requirementFamilies.flatMap((family) =>
-    [...prd.matchAll(requirementDefinitionPatterns[family])].map((match) => match[1]),
+    [...prd.matchAll(requirementDefinitionPatterns[family])].map(
+      (match) => match[1],
+    ),
   );
 }
 
@@ -70,10 +80,15 @@ function extractScreenDefinitions(design) {
 
 function addRequirementShorthands(text, definitions, references) {
   const families = requirementFamilies.join("|");
-  const shorthand = new RegExp(`\\btous?\\s+((?:${families})(?:\/(?:${families}))*)\\b`, "g");
+  const shorthand = new RegExp(
+    `\\btous?\\s+((?:${families})(?:/(?:${families}))*)\\b`,
+    "g",
+  );
   for (const [, group] of text.matchAll(shorthand)) {
     for (const family of group.split("/")) {
-      for (const id of definitions.filter((candidate) => candidate.startsWith(`${family}-`))) {
+      for (const id of definitions.filter((candidate) =>
+        candidate.startsWith(`${family}-`),
+      )) {
         references.add(id);
       }
     }
@@ -86,7 +101,9 @@ function addScreenShorthands(text, definitions, references) {
   }
   for (const [group] of text.matchAll(/\b[XLAOSN](?:\/[XLAOSN])+\b/g)) {
     for (const family of group.split("/")) {
-      for (const id of definitions.filter((candidate) => candidate.startsWith(`${family}-`))) {
+      for (const id of definitions.filter((candidate) =>
+        candidate.startsWith(`${family}-`),
+      )) {
         references.add(id);
       }
     }
@@ -98,9 +115,17 @@ function buildMatrix(roadmap, requirementDefinitions, screenDefinitions) {
   const taskPattern =
     /^\|\s*`(S[0-5]-\d{3})`\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|$/gm;
 
-  for (const [, id, requirementCell, screenCell, proof] of roadmap.matchAll(taskPattern)) {
-    const requirements = new Set(extractReferences(requirementCell, requirementFamilies, 3));
-    addRequirementShorthands(requirementCell, requirementDefinitions, requirements);
+  for (const [, id, requirementCell, screenCell, proof] of roadmap.matchAll(
+    taskPattern,
+  )) {
+    const requirements = new Set(
+      extractReferences(requirementCell, requirementFamilies, 3),
+    );
+    addRequirementShorthands(
+      requirementCell,
+      requirementDefinitions,
+      requirements,
+    );
     const screens = new Set(extractReferences(screenCell, screenFamilies, 2));
     addScreenShorthands(screenCell, screenDefinitions, screens);
     tasks.push({
@@ -114,7 +139,9 @@ function buildMatrix(roadmap, requirementDefinitions, screenDefinitions) {
   tasks.sort((left, right) => left.id.localeCompare(right.id));
   const requirements = requirementDefinitions.map((id) => ({
     id,
-    tasks: tasks.filter((task) => task.requirements.includes(id)).map((task) => task.id),
+    tasks: tasks
+      .filter((task) => task.requirements.includes(id))
+      .map((task) => task.id),
   }));
 
   return {
@@ -175,25 +202,35 @@ export async function inspectTraceability(root = projectRoot) {
   for (const name of Object.keys(DOCUMENTS)) {
     for (const id of references[name].requirements) {
       if (!requirementDefinitionSet.has(id)) {
-        errors.push(`Exigence orpheline dans ${name}: ${id} (définition attendue dans le PRD)`);
+        errors.push(
+          `Exigence orpheline dans ${name}: ${id} (définition attendue dans le PRD)`,
+        );
       }
     }
     for (const id of references[name].screens) {
       if (!screenDefinitionSet.has(id)) {
-        errors.push(`Écran orphelin dans ${name}: ${id} (définition attendue dans le DESIGN)`);
+        errors.push(
+          `Écran orphelin dans ${name}: ${id} (définition attendue dans le DESIGN)`,
+        );
       }
     }
   }
 
-  const matrix = buildMatrix(contents.ROADMAP, requirementDefinitions, screenDefinitions);
-  if (matrix.tasks.length === 0) errors.push("Aucune tâche extraite de la ROADMAP §16");
+  const matrix = buildMatrix(
+    contents.ROADMAP,
+    requirementDefinitions,
+    screenDefinitions,
+  );
+  if (matrix.tasks.length === 0)
+    errors.push("Aucune tâche extraite de la ROADMAP §16");
   for (const requirement of matrix.requirements) {
     if (requirement.tasks.length === 0) {
       errors.push(`Exigence PRD sans tâche ROADMAP: ${requirement.id}`);
     }
   }
   for (const task of matrix.tasks) {
-    if (task.screens.length === 0) errors.push(`Tâche ROADMAP sans écran: ${task.id}`);
+    if (task.screens.length === 0)
+      errors.push(`Tâche ROADMAP sans écran: ${task.id}`);
     if (task.tests.some((proof) => proof.length === 0)) {
       errors.push(`Tâche ROADMAP sans preuve/test minimal: ${task.id}`);
     }
@@ -211,7 +248,10 @@ export async function inspectTraceability(root = projectRoot) {
   };
 }
 
-export async function verifyTraceability(root = projectRoot, { writeMatrix = false } = {}) {
+export async function verifyTraceability(
+  root = projectRoot,
+  { writeMatrix = false } = {},
+) {
   const result = await inspectTraceability(root);
   const matrixFile = path.join(root, MATRIX_PATH);
 
@@ -221,14 +261,19 @@ export async function verifyTraceability(root = projectRoot, { writeMatrix = fal
       await writeFile(matrixFile, result.matrixText, "utf8");
       result.matrixStatus = "écrite";
     } else {
-      result.errors.push("Matrice non écrite car la traçabilité contient des anomalies");
+      result.errors.push(
+        "Matrice non écrite car la traçabilité contient des anomalies",
+      );
       result.matrixStatus = "non écrite";
     }
     return result;
   }
 
   try {
-    const current = (await readFile(matrixFile, "utf8")).replaceAll("\r\n", "\n");
+    const current = (await readFile(matrixFile, "utf8")).replaceAll(
+      "\r\n",
+      "\n",
+    );
     if (current !== result.matrixText) {
       result.errors.push(`Matrice de traçabilité en dérive: ${MATRIX_PATH}`);
       result.errors.sort();
@@ -247,7 +292,9 @@ export async function verifyTraceability(root = projectRoot, { writeMatrix = fal
 }
 
 function counts(groups, families) {
-  return families.map((family) => `${family}=${groups[family].length}`).join(" ");
+  return families
+    .map((family) => `${family}=${groups[family].length}`)
+    .join(" ");
 }
 
 export function formatSummary(result) {
@@ -273,19 +320,33 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
     const args = process.argv.slice(2);
     const rootIndex = args.indexOf("--root");
-    const root = rootIndex === -1 ? projectRoot : path.resolve(args[rootIndex + 1] ?? "");
+    const root =
+      rootIndex === -1 ? projectRoot : path.resolve(args[rootIndex + 1] ?? "");
     const writeMatrix = args.includes("--write");
     const printMatrix = args.includes("--print-matrix");
-    const known = new Set(["--root", "--write", "--print-matrix", rootIndex === -1 ? "" : args[rootIndex + 1]]);
+    const known = new Set([
+      "--root",
+      "--write",
+      "--print-matrix",
+      rootIndex === -1 ? "" : args[rootIndex + 1],
+    ]);
     const unknown = args.filter((argument) => !known.has(argument));
-    if (unknown.length > 0 || (rootIndex !== -1 && !args[rootIndex + 1]) || (writeMatrix && printMatrix)) {
-      throw new Error("Usage: node scripts/check-traceability.mjs [--root <dossier>] [--write|--print-matrix]");
+    if (
+      unknown.length > 0 ||
+      (rootIndex !== -1 && !args[rootIndex + 1]) ||
+      (writeMatrix && printMatrix)
+    ) {
+      throw new Error(
+        "Usage: node scripts/check-traceability.mjs [--root <dossier>] [--write|--print-matrix]",
+      );
     }
 
     if (printMatrix) {
       const result = await inspectTraceability(root);
       if (result.errors.length > 0) {
-        console.error(formatSummary({ ...result, matrixStatus: "non vérifiée" }));
+        console.error(
+          formatSummary({ ...result, matrixStatus: "non vérifiée" }),
+        );
         process.exitCode = 1;
       } else {
         process.stdout.write(result.matrixText);

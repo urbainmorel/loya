@@ -7,14 +7,20 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 export async function verifyBaseline(projectRoot = root) {
   const manifest = JSON.parse(
-    await readFile(path.join(projectRoot, "docs", "normative-manifest.json"), "utf8"),
+    await readFile(
+      path.join(projectRoot, "docs", "normative-manifest.json"),
+      "utf8",
+    ),
   );
   const failures = [];
 
   for (const [relativePath, expected] of Object.entries(manifest.files)) {
     const contents = await readFile(path.join(projectRoot, relativePath));
-    const actual = createHash(manifest.algorithm).update(contents).digest("hex");
-    if (actual !== expected) failures.push(`${relativePath}: ${actual} != ${expected}`);
+    const actual = createHash(manifest.algorithm)
+      .update(contents)
+      .digest("hex");
+    if (actual !== expected)
+      failures.push(`${relativePath}: ${actual} != ${expected}`);
   }
 
   return failures;

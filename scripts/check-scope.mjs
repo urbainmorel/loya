@@ -17,6 +17,7 @@ const ignoredDirectories = new Set([
   "__tests__",
   "fixtures",
 ]);
+const ignoredGeneratedFiles = new Set(["worker-configuration.d.ts"]);
 const forbiddenDependencies = new Set([
   "next",
   "fastify",
@@ -111,13 +112,15 @@ const forbiddenSourcePatterns = [
 ];
 
 async function walk(directory) {
-  const entries = await readdir(directory, { withFileTypes: true }).catch(() => []);
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    () => [],
+  );
   const files = [];
   for (const entry of entries) {
     if (entry.isDirectory() && ignoredDirectories.has(entry.name)) continue;
     const absolute = path.join(directory, entry.name);
     if (entry.isDirectory()) files.push(...(await walk(absolute)));
-    else files.push(absolute);
+    else if (!ignoredGeneratedFiles.has(entry.name)) files.push(absolute);
   }
   return files;
 }
@@ -131,7 +134,8 @@ export async function findScopeViolations(projectRoot = root) {
       if (!sourceExtensions.has(path.extname(file))) continue;
       const source = await readFile(file, "utf8");
       for (const [pattern, label] of forbiddenSourcePatterns) {
-        if (pattern.test(source)) violations.push(`${path.relative(projectRoot, file)}: ${label}`);
+        if (pattern.test(source))
+          violations.push(`${path.relative(projectRoot, file)}: ${label}`);
       }
     }
   }
@@ -146,21 +150,30 @@ export async function findScopeViolations(projectRoot = root) {
         ...manifest.optionalDependencies,
         ...manifest.peerDependencies,
       };
-      const relative = path.relative(projectRoot, file).split(path.sep).join("/");
+      const relative = path
+        .relative(projectRoot, file)
+        .split(path.sep)
+        .join("/");
       manifests.set(relative, new Set(Object.keys(dependencies)));
       for (const dependency of Object.keys(dependencies)) {
         if (
           forbiddenDependencies.has(dependency) ||
-          forbiddenDependencyPrefixes.some((prefix) => dependency.startsWith(prefix))
+          forbiddenDependencyPrefixes.some((prefix) =>
+            dependency.startsWith(prefix),
+          )
         ) {
-          violations.push(`${path.relative(projectRoot, file)}: dépendance interdite ${dependency}`);
+          violations.push(
+            `${path.relative(projectRoot, file)}: dépendance interdite ${dependency}`,
+          );
         }
       }
     }
     if (/^wrangler\.(?:jsonc?|toml)$/.test(path.basename(file))) {
       const config = await readFile(file, "utf8");
       if (/\bd1_databases\b/.test(config)) {
-        violations.push(`${path.relative(projectRoot, file)}: binding D1 interdit`);
+        violations.push(
+          `${path.relative(projectRoot, file)}: binding D1 interdit`,
+        );
       }
     }
   }
@@ -170,19 +183,23 @@ export async function findScopeViolations(projectRoot = root) {
     if (!dependencies) continue;
     for (const dependency of required) {
       if (!dependencies.has(dependency)) {
-        violations.push(`${manifestPath}: dépendance de stack requise absente ${dependency}`);
+        violations.push(
+          `${manifestPath}: dépendance de stack requise absente ${dependency}`,
+        );
       }
     }
   }
 
-  const hasProductManifest = [...requiredProductDependencies.keys()].some((manifestPath) =>
-    manifests.has(manifestPath),
+  const hasProductManifest = [...requiredProductDependencies.keys()].some(
+    (manifestPath) => manifests.has(manifestPath),
   );
   const hasSupabase = [...manifests.values()].some((dependencies) =>
     dependencies.has("@supabase/supabase-js"),
   );
   if (hasProductManifest && !hasSupabase) {
-    violations.push("manifests produit: dépendance de stack requise absente @supabase/supabase-js");
+    violations.push(
+      "manifests produit: dépendance de stack requise absente @supabase/supabase-js",
+    );
   }
 
   return violations.sort();
