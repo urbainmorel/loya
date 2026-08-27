@@ -93,16 +93,38 @@ async function callProbe(baseUrl, token) {
   return { payload, status: response.status };
 }
 
+function safeProbeCode(payload) {
+  if (
+    typeof payload !== "object" ||
+    payload === null ||
+    !("code" in payload) ||
+    typeof payload.code !== "string"
+  ) {
+    return "UNKNOWN";
+  }
+
+  const allowedCodes = new Set([
+    "AUTH_REJECTED",
+    "AUTH_UPSTREAM_UNAVAILABLE",
+    "RPC_UPSTREAM_UNAVAILABLE",
+    "SUPABASE_CONFIG_REJECTED",
+    "SUPABASE_REJECTED",
+  ]);
+  return allowedCodes.has(payload.code) ? payload.code : "UNKNOWN";
+}
+
 async function waitForProbe(baseUrl, token) {
   let lastStatus = 0;
+  let lastCode = "UNKNOWN";
   for (let attempt = 0; attempt < 90; attempt += 1) {
     const result = await callProbe(baseUrl, token);
     lastStatus = result.status;
+    lastCode = safeProbeCode(result.payload);
     if (result.status === 200) return result;
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   throw new Error(
-    `La RPC OQ-002 n'est pas devenue disponible (dernier HTTP ${lastStatus}).`,
+    `La RPC OQ-002 n'est pas devenue disponible (dernier HTTP ${lastStatus}, code ${lastCode}).`,
   );
 }
 

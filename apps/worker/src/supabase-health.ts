@@ -38,7 +38,7 @@ export async function probeSupabaseHealth(
       accept: "application/json",
       apikey: bindings.SUPABASE_PUBLISHABLE_KEY,
     },
-    redirect: "error",
+    redirect: "manual",
   });
 
   const healthy = response.ok;

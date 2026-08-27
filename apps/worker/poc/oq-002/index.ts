@@ -21,17 +21,28 @@ app.get("/probe", async (context) => {
     return context.json({ code: "AUTH_REQUIRED" }, 401);
   }
 
-  const supabaseUrl = assertSafeSupabaseUrl(context.env.SUPABASE_URL);
+  let supabaseUrl: URL;
+  try {
+    supabaseUrl = assertSafeSupabaseUrl(context.env.SUPABASE_URL);
+  } catch {
+    return context.json({ code: "SUPABASE_CONFIG_REJECTED" }, 500);
+  }
+
   const authEndpoint = new URL("/auth/v1/user", supabaseUrl);
-  const authResponse = await fetch(authEndpoint, {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      apikey: context.env.SUPABASE_PUBLISHABLE_KEY,
-      authorization,
-    },
-    redirect: "error",
-  });
+  let authResponse: Response;
+  try {
+    authResponse = await fetch(authEndpoint, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        apikey: context.env.SUPABASE_PUBLISHABLE_KEY,
+        authorization,
+      },
+      redirect: "manual",
+    });
+  } catch {
+    return context.json({ code: "AUTH_UPSTREAM_UNAVAILABLE" }, 502);
+  }
 
   const authContentType = authResponse.headers.get("content-type") ?? "";
   if (
@@ -57,19 +68,24 @@ app.get("/probe", async (context) => {
     "/rest/v1/rpc/__s0_oq002_identity_scope",
     supabaseUrl,
   );
-  const upstream = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "accept-profile": "api",
-      apikey: context.env.SUPABASE_PUBLISHABLE_KEY,
-      authorization,
-      "content-profile": "api",
-      "content-type": "application/json",
-    },
-    body: "{}",
-    redirect: "error",
-  });
+  let upstream: Response;
+  try {
+    upstream = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "accept-profile": "api",
+        apikey: context.env.SUPABASE_PUBLISHABLE_KEY,
+        authorization,
+        "content-profile": "api",
+        "content-type": "application/json",
+      },
+      body: "{}",
+      redirect: "manual",
+    });
+  } catch {
+    return context.json({ code: "RPC_UPSTREAM_UNAVAILABLE" }, 502);
+  }
 
   const contentType = upstream.headers.get("content-type") ?? "";
   if (
