@@ -12,6 +12,7 @@ coverage/
 results.sarif
 output/
 playwright-report/
+.playwright-cli/
 test-results/
 *.tsbuildinfo
 *.log
