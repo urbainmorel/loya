@@ -2,7 +2,7 @@
 
 begin;
 
-set local search_path = extensions, pg_catalog;
+set local search_path = pg_catalog, extensions;
 
 select plan(9);
 
@@ -147,13 +147,20 @@ select set_config(
 
 set local role authenticated;
 
+select set_config(
+  'loya.oq002_authenticated_resource_ids',
+  (select resource_ids::text from api.__s0_oq002_identity_scope()),
+  true
+);
+
+reset role;
+
 select is(
-  (select resource_ids from api.__s0_oq002_identity_scope()),
+  current_setting('loya.oq002_authenticated_resource_ids')::uuid[],
   array['10000000-0000-4000-8000-000000000001'::uuid],
   'user A sees only its resource through auth.uid() and RLS'
 );
 
-reset role;
 select set_config('request.jwt.claim.sub', '', true);
 select set_config('request.jwt.claims', '{}', true);
 
@@ -163,13 +170,19 @@ grant __s0_oq002_owner to postgres
 
 set local role __s0_oq002_owner;
 
-select is(
-  (select count(*) from private.__s0_oq002_scope),
-  0::bigint,
-  'FORCE RLS applies to the table owner without a JWT'
+select set_config(
+  'loya.oq002_owner_count',
+  (select count(*)::text from private.__s0_oq002_scope),
+  true
 );
 
 reset role;
+
+select is(
+  current_setting('loya.oq002_owner_count')::bigint,
+  0::bigint,
+  'FORCE RLS applies to the table owner without a JWT'
+);
 
 revoke __s0_oq002_owner from postgres
   granted by postgres;
