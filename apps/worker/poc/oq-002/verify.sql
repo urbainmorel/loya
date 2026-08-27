@@ -2,7 +2,7 @@
 
 begin;
 
-select plan(9);
+select plan(14);
 
 select ok(
   (
@@ -27,27 +27,62 @@ select ok(
     select nspowner = '__s0_oq002_owner'::regrole
     from pg_catalog.pg_namespace
     where nspname = 'api'
-  )
-  and (
+  ),
+  'api schema uses the hardened owner'
+);
+
+select ok(
+  (
     select nspowner = '__s0_oq002_owner'::regrole
     from pg_catalog.pg_namespace
     where nspname = 'private'
-  )
-  and (
+  ),
+  'private schema uses the hardened owner'
+);
+
+select ok(
+  (
     select relowner = '__s0_oq002_owner'::regrole
     from pg_catalog.pg_class
     where oid = 'private.__s0_oq002_scope'::regclass
-  )
-  and (
+  ),
+  'POC table uses the hardened owner'
+);
+
+select ok(
+  (
     select proowner = '__s0_oq002_owner'::regrole
     from pg_catalog.pg_proc
     where oid = 'api.__s0_oq002_identity_scope()'::regprocedure
-  )
-  and not has_schema_privilege('postgres', 'api', 'USAGE')
-  and not has_schema_privilege('postgres', 'api', 'CREATE')
-  and not has_schema_privilege('postgres', 'private', 'USAGE')
+  ),
+  'POC function uses the hardened owner'
+);
+
+select is(
+  coalesce(
+    (
+      select array_agg(
+        namespace_row.nspname || ':' || acl.privilege_type
+        order by namespace_row.nspname, acl.privilege_type
+      )
+      from pg_catalog.pg_namespace as namespace_row
+      cross join lateral pg_catalog.aclexplode(
+        coalesce(namespace_row.nspacl, '{}'::aclitem[])
+      ) as acl
+      where namespace_row.nspname in ('api', 'private')
+        and acl.grantee = ('postgres'::regrole)::oid
+        and acl.privilege_type in ('USAGE', 'CREATE')
+    ),
+    '{}'::text[]
+  ),
+  '{}'::text[],
+  'postgres retains no explicit POC schema ACL'
+);
+
+select ok(
+  not has_schema_privilege('postgres', 'api', 'CREATE')
   and not has_schema_privilege('postgres', 'private', 'CREATE'),
-  'POC schemas, table and function use the hardened owner'
+  'postgres has no effective POC schema CREATE capability'
 );
 
 select ok(

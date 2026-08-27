@@ -149,7 +149,7 @@ jobs:
           verify_output="$(node scripts/redact-supabase-log.mjs "$pgtap_log")"
           printf '%s\n' "$verify_output"
           if [[ "$verify_status" -ne 0 ]] \
-            || ! grep -q 'Files=1, Tests=9,' <<< "$verify_output" \
+            || ! grep -q 'Files=1, Tests=14,' <<< "$verify_output" \
             || ! grep -q '^Result: PASS$' <<< "$verify_output"; then
             echo "OQ-002 SQL assertions failed."
             exit 1
