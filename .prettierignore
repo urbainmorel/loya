@@ -12,3 +12,4 @@ results.sarif
 pnpm-lock.yaml
 **/*.svg
 **/worker-configuration.d.ts
+supabase/**/*.sql
