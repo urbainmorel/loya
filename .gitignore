@@ -9,6 +9,7 @@ node_modules/
 dist/
 graphify-out/
 coverage/
+results.sarif
 output/
 playwright-report/
 test-results/

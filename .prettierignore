@@ -8,6 +8,7 @@ docs/traceability/requirements-matrix.json
 graphify-out/
 dist/
 coverage/
+results.sarif
 pnpm-lock.yaml
 **/*.svg
 **/worker-configuration.d.ts

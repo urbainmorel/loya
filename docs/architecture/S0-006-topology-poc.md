@@ -189,7 +189,7 @@ Le scan doit être complété par le scanner de secrets CI. Une sortie de comman
 | `pnpm audit --audit-level high` | aucune vulnérabilité connue après correction du graphe transitif                                                                                |
 | `wrangler dev`                  | `/` répond `200 text/html` avec CSP ; `/v1/health` répond `200 application/json` ; `/v1` et une route inconnue répondent `404 application/json` |
 | Corrélation                     | le Worker remplace un `X-Request-Id` fourni par le client par un UUID serveur et le renvoie dans le header, le JSON et les logs canonisés       |
-| `wrangler deploy`               | version `04604e8b-47c1-42ba-a5cf-13e927191c14` déployée, startup Worker mesuré à `11 ms`, binding non secret `ENVIRONMENT=s0-poc` uniquement     |
+| `wrangler deploy`               | version `04604e8b-47c1-42ba-a5cf-13e927191c14` déployée, startup Worker mesuré à `11 ms`, binding non secret `ENVIRONMENT=s0-poc` uniquement    |
 | Smoke test externe              | mêmes statuts, types de contenu, CSP et politique `no-store` observés sur `https://loya-s0-topology-poc.morelhouanho.workers.dev`               |
 
 Les invocation logs et traces automatiques sont désactivés pour éviter la conservation de query strings ; seuls les événements applicatifs structurés, à route canonisée et sans entrée brute, sont persistés. Leur réactivation exige une preuve de redaction conforme au STI §16.2.
