@@ -94,12 +94,16 @@ async function callProbe(baseUrl, token) {
 }
 
 async function waitForProbe(baseUrl, token) {
-  for (let attempt = 0; attempt < 30; attempt += 1) {
+  let lastStatus = 0;
+  for (let attempt = 0; attempt < 90; attempt += 1) {
     const result = await callProbe(baseUrl, token);
+    lastStatus = result.status;
     if (result.status === 200) return result;
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
-  throw new Error("La RPC OQ-002 n'est pas devenue disponible.");
+  throw new Error(
+    `La RPC OQ-002 n'est pas devenue disponible (dernier HTTP ${lastStatus}).`,
+  );
 }
 
 async function callRpc(baseUrl, publishableKey, token, body = {}) {
