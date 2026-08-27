@@ -95,6 +95,7 @@ describe("Loya Worker", () => {
     const [input, init] = outboundFetch.mock.calls[0] ?? [];
     expect(String(input)).toBe("https://example.supabase.co/auth/v1/health");
     expect(new Headers(init?.headers).get("apikey")).toBe("public-test-key");
+    expect(init?.redirect).toBe("manual");
   });
 
   it("refuse HTTP pour une cible Supabase distante", async () => {

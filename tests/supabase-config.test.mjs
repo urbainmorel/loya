@@ -82,6 +82,14 @@ test("le diagnostic Supabase masque chaque famille de secret", () => {
     "Publishable key: sb_publishable_public-local",
     "Secret key: sb_secret_private-local",
     "SUPABASE_ACCESS_TOKEN=sbp_personal-local",
+    "JWT_SECRET=local-jwt-secret",
+    "ANON_KEY=local-anon-key",
+    "SERVICE_ROLE_KEY=local-service-role-key",
+    "apikey: local-api-key",
+    "Authorization: Bearer local-access-token",
+    '{"JWT_SECRET":"json-jwt-secret","apikey":"json-api-key"}',
+    "2026-08-27T12:00:00Z authorization=Bearer prefixed-access-token",
+    "request SERVICE_ROLE_KEY=prefixed-service-role-key status=failed",
   ].join("\n");
   const redacted = redactSupabaseLog(source);
 
@@ -92,6 +100,15 @@ test("le diagnostic Supabase masque chaque famille de secret", () => {
     "sb_publishable_public-local",
     "sb_secret_private-local",
     "sbp_personal-local",
+    "local-jwt-secret",
+    "local-anon-key",
+    "local-service-role-key",
+    "local-api-key",
+    "local-access-token",
+    "json-jwt-secret",
+    "json-api-key",
+    "prefixed-access-token",
+    "prefixed-service-role-key",
   ]) {
     assert.equal(redacted.includes(secret), false);
   }

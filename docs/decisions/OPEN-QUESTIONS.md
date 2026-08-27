@@ -63,6 +63,8 @@ Une question n'est close que par une décision explicite et traçable indiquant 
 
 **Impact et clôture.** Bloque les migrations, grants et commandes. Clôture par POC Worker → fonction SQL, trace de `auth.uid()`, tests allow/deny inter-agences et preuve qu'aucun secret serveur n'atteint le navigateur ou les logs.
 
+**Preuve expérimentale en cours.** Le [POC Data API/RLS](../architecture/S0-004-oq002-data-api-poc.md) implémente une chaîne de lecture jetable avec GoTrue, clé publiable, validation Worker, même JWT vers PostgREST, `auth.uid()` et RLS. Il teste aussi l'appel direct de la RPC : celui-ci réussit et confirme que la frontière « Worker uniquement » reste ambiguë. La CI GitHub complète est encore attendue ; aucune mutation ni transaction n'est prouvée et la question reste **OUVERTE**.
+
 ### `OQ-003` — Retry : état de la tentative et état de l'ordre
 
 **Question.** Une nouvelle génération de tentative est permise après une tentative terminale non approuvée, mais seulement si l'ordre reste `CREATED`. Par ailleurs, un échec fournisseur terminal fait passer un ordre non terminal à `FAILED`, après quoi un nouvel ordre est exigé (STI, l. 201–207, 416–429, 693–697 et 807–824). Il manque la table qui dit quels échecs terminent la tentative seule et lesquels terminent aussi l'ordre.
