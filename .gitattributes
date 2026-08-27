@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+# Sources normatives figées octet par octet par docs/normative-manifest.json.
+PRD_Gestion_Locative_IA_V1.md -text whitespace=-trailing-space
+STI_Gestion_Locative_IA_V1.md -text whitespace=-trailing-space
+DESIGN_Gestion_Locative_IA_V1.md -text whitespace=-trailing-space
+ROADMAP_Gestion_Locative_IA_V1.md -text whitespace=-trailing-space
+"maquette écrans locataire.png" binary

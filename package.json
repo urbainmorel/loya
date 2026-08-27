@@ -1,0 +1,19 @@
+{
+  "name": "loya",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Loya V1 — gestion locative mobile-first",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": "24.15.x",
+    "pnpm": "11.24.0"
+  },
+  "scripts": {
+    "check:baseline": "node scripts/check-baseline.mjs",
+    "check:traceability": "node scripts/check-traceability.mjs",
+    "check:scope": "node scripts/check-scope.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check:s0": "pnpm check:baseline && pnpm check:traceability && pnpm check:scope && pnpm test"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "PRD_Gestion_Locative_IA_V1.md": "64ce69697252e5cc2e61742a6a8c3a9144d6dcc23dab3f94b962037821481576",
+    "STI_Gestion_Locative_IA_V1.md": "5e75f7bbe188b91ecb88a38784030062ce4c1c7a780a0c4a8cc4959e39d8e38a",
+    "DESIGN_Gestion_Locative_IA_V1.md": "ce0f99f41bc3c7321a38e236a7310e9ae90ebcfd0c6fe69ea876e950f0bbaa51",
+    "ROADMAP_Gestion_Locative_IA_V1.md": "fde118072f6ce53d4057f38d58b53360a023e6b675fec87de56831a9486d98dc",
+    "maquette écrans locataire.png": "15cf06bf0423555d867a992e30271b81d39cbd0aee6c3e876988913e42554376"
+  }
+}

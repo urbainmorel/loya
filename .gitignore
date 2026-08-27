@@ -1,0 +1,15 @@
+node_modules/
+.pnpm-store/
+.env
+.env.*
+!.env.example
+.dev.vars*
+.wrangler/
+dist/
+coverage/
+output/
+playwright-report/
+test-results/
+*.log
+.DS_Store
+Thumbs.db
