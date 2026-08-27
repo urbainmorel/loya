@@ -133,12 +133,12 @@ jobs:
             psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 \
             < apps/worker/poc/oq-002/setup.sql
 
-          verify_output="$(docker exec -i supabase_db_loya \
-            psql -XAtq -U postgres -d postgres -v ON_ERROR_STOP=1 \
-            < apps/worker/poc/oq-002/verify.sql)"
+          verify_output="$(pnpm exec supabase test db \
+            apps/worker/poc/oq-002/verify.sql \
+            --local)"
           printf '%s\n' "$verify_output"
-          if grep -q '^not ok' <<< "$verify_output" \
-            || ! grep -q '^1\.\.9$' <<< "$verify_output"; then
+          if ! grep -q 'Files=1, Tests=9,' <<< "$verify_output" \
+            || ! grep -q '^Result: PASS$' <<< "$verify_output"; then
             echo "OQ-002 SQL assertions failed."
             exit 1
           fi
