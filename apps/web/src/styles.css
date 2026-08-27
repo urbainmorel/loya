@@ -11,62 +11,133 @@
     sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
+  --loya-background: #fcfcfc;
+  --loya-surface: #ffffff;
+  --loya-ink: #0b1f2a;
+  --loya-navy: #0c2433;
+  --loya-navy-strong: #071923;
+  --loya-gold: #c7a55b;
+  --loya-beige: #f7f2eb;
+  --loya-border: #e6e2dc;
+  --loya-muted: #667085;
+  --color-primary-50: #eef2f3;
+  --color-primary-600: #16394a;
+  --color-neutral-700: #34454e;
+  --color-warning-50: #fff8e8;
+  --color-warning-800: #8a5a12;
+  --color-danger-50: #fef2f2;
+  --color-danger-700: #b42318;
+  --color-focus-inner: #ffffff;
+  --color-focus-outer: #0c2433;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  min-width: 320px;
+  background: var(--loya-background);
+}
+
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 button,
-input,
-select,
-textarea {
+input {
   font: inherit;
 }
 
-.shell {
-  width: min(100% - 2rem, 62rem);
+button,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 10;
+  top: 0.5rem;
+  left: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  color: #ffffff;
+  background: var(--loya-navy);
+  font-weight: 700;
+  transform: translateY(calc(-100% - 1rem));
+}
+
+.skip-link:focus {
+  outline: 0.125rem solid var(--color-focus-inner);
+  outline-offset: 0.125rem;
+  box-shadow: 0 0 0 0.25rem var(--color-focus-outer);
+  transform: translateY(0);
+}
+
+.auth-shell {
+  width: min(100% - 2rem, 68rem);
   min-height: 100vh;
   margin-inline: auto;
-  padding: clamp(2rem, 8vw, 6rem) 0;
-  display: grid;
-  align-content: center;
-  gap: clamp(2rem, 7vw, 5rem);
+  padding: 1.5rem 0 3rem;
 }
 
 .brand {
-  display: flex;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
   align-items: center;
-  gap: 1rem;
+  column-gap: 0.75rem;
+  width: fit-content;
 }
 
 .brand__mark {
   display: grid;
-  flex: 0 0 4rem;
-  width: 4rem;
-  height: 4rem;
+  grid-row: 1 / span 2;
+  width: 3rem;
+  height: 3rem;
   place-items: center;
-  border-radius: 1.25rem;
-  color: #f7f2eb;
-  background: #0c2433;
-  box-shadow: inset 0 -0.2rem 0 #c7a55b;
-  font-size: 2rem;
+  border-radius: 0.9rem;
+  color: var(--loya-beige);
+  background: var(--loya-navy);
+  box-shadow: inset 0 -0.18rem 0 var(--loya-gold);
+  font-size: 1.5rem;
   font-weight: 800;
 }
 
+.brand__name {
+  align-self: end;
+  font-family: Newsreader, Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.brand__tagline {
+  align-self: start;
+  color: var(--loya-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+}
+
+.door-section {
+  margin-top: clamp(3rem, 8vw, 6rem);
+  text-align: center;
+}
+
 .eyebrow,
-.proof__label {
-  margin: 0 0 0.35rem;
-  color: #667085;
-  font-size: 1rem;
+.auth-panel__eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--color-primary-600);
+  font-size: 0.875rem;
   font-weight: 750;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -76,79 +147,347 @@ p {
   margin-top: 0;
 }
 
+h1,
+h2 {
+  font-family: Newsreader, Georgia, serif;
+  color: var(--loya-navy-strong);
+  font-weight: 600;
+}
+
 h1 {
-  margin-bottom: 0.15rem;
-  font-size: clamp(2.25rem, 8vw, 4rem);
-  line-height: 0.95;
-  letter-spacing: -0.05em;
+  margin-bottom: 0.75rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  letter-spacing: -0.025em;
 }
 
 h2 {
-  max-width: 18ch;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.intro {
+  max-width: 38rem;
+  margin: 0 auto 2rem;
+  color: var(--color-neutral-700);
+}
+
+.door-selector {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.door-selector legend {
+  width: 100%;
   margin-bottom: 1rem;
-  font-size: clamp(1.75rem, 6vw, 3.25rem);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
-}
-
-.tagline {
-  margin-bottom: 0;
-  color: #34454e;
-}
-
-.proof {
-  padding: clamp(1.5rem, 5vw, 3rem);
-  border: 1px solid #e6e2dc;
-  border-radius: 1.5rem;
-  background: #fff;
-  box-shadow: 0 1.25rem 3rem rgb(7 25 35 / 8%);
-}
-
-.proof > p:not(.proof__label, .status) {
-  max-width: 60ch;
-  color: #34454e;
   font-size: 1rem;
-  line-height: 1.65;
+  font-weight: 700;
+  text-align: left;
 }
 
-.status {
-  display: inline-flex;
-  min-height: 2.75rem;
-  margin: 1rem 0 0;
-  padding: 0.65rem 0.9rem;
-  align-items: center;
-  gap: 0.65rem;
-  border-radius: 999px;
-  color: #16394a;
-  background: #eef2f3;
+.door-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.door-card {
+  position: relative;
+  display: grid;
+  min-height: 10rem;
+  padding: 1.25rem;
+  justify-items: start;
+  border: 1px solid var(--loya-muted);
+  border-radius: 1.25rem;
+  color: var(--loya-ink);
+  background: var(--loya-surface);
+  box-shadow: 0 0.75rem 2rem rgb(7 25 35 / 6%);
+  cursor: pointer;
+  text-align: left;
+}
+
+.door-card:hover {
+  border-color: var(--loya-muted);
+}
+
+.door-card:focus-within {
+  outline: 0.125rem solid var(--color-focus-inner);
+  outline-offset: 0.125rem;
+  box-shadow:
+    0 0 0 0.25rem var(--color-focus-outer),
+    0 0.75rem 2rem rgb(7 25 35 / 6%);
+}
+
+.door-card--selected {
+  border-color: var(--loya-navy);
+  background: var(--color-primary-50);
+  box-shadow: inset 0 0 0 0.0625rem var(--loya-navy);
+}
+
+.door-card input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.door-card__icon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 1rem;
+  place-items: center;
+  border-radius: 0.85rem;
+  color: var(--loya-navy);
+  background: var(--loya-beige);
+}
+
+.door-card__icon svg {
+  width: 1.45rem;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+}
+
+.door-card__title {
+  font-size: 1rem;
   font-weight: 700;
 }
 
-.status span {
-  width: 0.7rem;
-  height: 0.7rem;
-  border: 2px solid currentColor;
-  border-radius: 999px;
+.door-card__summary {
+  margin-top: 0.25rem;
+  color: var(--color-neutral-700);
 }
 
-.status--ready {
-  color: #2f7d4a;
-  background: #edf6ee;
+.door-card__state {
+  min-height: 1.25rem;
+  margin-top: 0.75rem;
+  color: var(--color-primary-600);
+  font-size: 1rem;
+  font-weight: 700;
 }
 
-.status--unavailable {
-  color: #8a5a12;
-  background: #fff8e8;
+.account-note {
+  margin: 1.25rem 0 0;
+  color: var(--color-neutral-700);
+  font-weight: 600;
 }
 
-@media (min-width: 48rem) {
-  .shell {
-    grid-template-columns: minmax(16rem, 0.75fr) minmax(26rem, 1.25fr);
-    align-items: center;
+.selection-hint {
+  max-width: 26.25rem;
+  margin: 2rem auto 0;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+  text-align: center;
+}
+
+.auth-panel {
+  max-width: 26.25rem;
+  margin: 2rem auto 0;
+  padding: clamp(1.25rem, 5vw, 2rem);
+  border: 1px solid var(--loya-border);
+  border-radius: 1.5rem;
+  background: var(--loya-surface);
+  box-shadow: 0 1.25rem 3rem rgb(7 25 35 / 8%);
+}
+
+.auth-panel__help {
+  margin-bottom: 1.5rem;
+  color: var(--color-neutral-700);
+}
+
+.button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: 0.0625rem solid transparent;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:focus-visible,
+.change-door:focus-visible,
+input:focus-visible {
+  outline: 0.125rem solid var(--color-focus-inner);
+  outline-offset: 0.125rem;
+  box-shadow: 0 0 0 0.25rem var(--color-focus-outer);
+}
+
+.button--google {
+  border-color: var(--loya-muted);
+  color: #1f1f1f;
+  background: #ffffff;
+  box-shadow: 0 0.0625rem 0.125rem rgb(7 25 35 / 12%);
+}
+
+.button--google:hover {
+  background: #f8faff;
+}
+
+.google-mark {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.google-mark svg {
+  width: 1.1rem;
+}
+
+.separator {
+  display: flex;
+  margin: 1.25rem 0;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--loya-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.separator::before,
+.separator::after {
+  height: 0.0625rem;
+  flex: 1;
+  background: var(--loya-border);
+  content: "";
+}
+
+.auth-panel form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.auth-panel label {
+  font-weight: 700;
+}
+
+.auth-panel input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 0.0625rem solid var(--loya-muted);
+  border-radius: 0.65rem;
+  color: var(--loya-ink);
+  background: var(--loya-surface);
+}
+
+.auth-panel input[aria-invalid="true"] {
+  border-color: var(--color-danger-700);
+}
+
+.button--secondary {
+  border-color: var(--loya-navy);
+  color: var(--loya-navy);
+  background: var(--loya-surface);
+}
+
+.button--secondary:hover {
+  background: var(--color-primary-50);
+}
+
+.feedback {
+  display: flex;
+  min-height: 2.75rem;
+  margin: 1rem 0 0;
+  padding: 0.65rem 0.75rem;
+  align-items: flex-start;
+  gap: 0.6rem;
+  border-radius: 0.65rem;
+  font-size: 1rem;
+}
+
+.feedback span {
+  display: grid;
+  flex: 0 0 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border: 0.0625rem solid currentcolor;
+  border-radius: 50%;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.feedback--info {
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+}
+
+.feedback--warning {
+  color: var(--color-warning-800);
+  background: var(--color-warning-50);
+}
+
+.feedback--error {
+  color: var(--color-danger-700);
+  background: var(--color-danger-50);
+}
+
+.legal {
+  margin: 1.25rem 0 0;
+  color: var(--loya-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.change-door {
+  display: block;
+  min-height: 2.75rem;
+  margin: 0.75rem auto 0;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  color: var(--loya-navy);
+  background: transparent;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+@media (min-width: 37.5rem) {
+  .auth-shell {
+    width: min(100% - 3rem, 68rem);
+    padding-top: 2rem;
   }
 
-  .brand {
-    align-items: flex-start;
+  .door-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+  }
+
+  h2 {
+    font-size: 1.375rem;
+    line-height: 1.875rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .door-card {
+    padding: 1.5rem;
   }
 }
 
