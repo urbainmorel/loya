@@ -70,7 +70,7 @@ packages/
   observability/       logs, traces, métriques, corrélation
 ```
 
-Contraintes de dépôt : TypeScript strict, workspace `pnpm` et lockfile `pnpm-lock.yaml` uniques, imports par frontières publiques, aucun import d’`apps/*` vers `packages/*`, aucune dépendance circulaire. La version exacte de `pnpm` est épinglée dans `packageManager`; la ligne Node active LTS retenue est épinglée dans les fichiers d’outillage et contrôlée par la CI. Vite construit la PWA et Wrangler construit/déploie le Worker.
+Contraintes de dépôt : TypeScript strict, workspace `pnpm` et lockfile `pnpm-lock.yaml` uniques, imports par frontières publiques. Les applications `apps/*` peuvent importer uniquement les points d’entrée publics de `packages/*`; aucun package `packages/*` ne peut importer une application `apps/*`, et aucune dépendance circulaire n’est autorisée. La version exacte de `pnpm` est épinglée dans `packageManager`; la ligne Node active LTS retenue est épinglée dans les fichiers d’outillage et contrôlée par la CI. Vite construit la PWA et Wrangler construit/déploie le Worker.
 
 ### 1.3 Principes structurants
 
@@ -201,7 +201,7 @@ Valeurs :
 
 - `Payment.source`: `FEDAPAY` ou `MANUAL`.
 - `payment_channel`: `MOBILE_MONEY` ou `CARD`. Un ordre garde un canal immuable ; en changer exige un nouveau devis.
-- `PaymentAttempt.state`: `REQUESTED`, `DISPATCHING`, `REQUIRES_ACTION`, `PROCESSING`, `SUCCEEDED`, `FAILED`, `EXPIRED` ou `CANCELLED`. `REQUESTED`, `DISPATCHING`, `REQUIRES_ACTION` et `PROCESSING` sont non terminaux ; un nouvel essai n’est créé qu’après preuve d’un état terminal non approuvé et avec une génération supérieure.
+- `PaymentAttempt.state`: `REQUESTED`, `DISPATCHING`, `REQUIRES_ACTION`, `PROCESSING`, `SUCCEEDED`, `FAILED`, `EXPIRED` ou `CANCELLED`. `REQUESTED`, `DISPATCHING`, `REQUIRES_ACTION` et `PROCESSING` sont non terminaux ; une génération supérieure sur le même ordre n’est créée qu’après un échec technique prouvé avant acceptation fournisseur, lorsque l’ordre reste `CREATED` conformément à la table de la section 6.2.
 - `PaymentAttempt.action_type`: `REDIRECT`, `MOBILE_MONEY_PROMPT` ou `NONE`. Une URL d’action est chiffrée, temporaire, jamais journalisée et ne peut être restituée qu’après contrôle de l’ordre, du locataire et de son origine allowlistée.
 - Pour `MOBILE_MONEY`, le numéro normalisé est chiffré sur la tentative avec une rétention courte ; l’outbox ne contient que `paymentAttemptId`. Il est purgé dès que le fournisseur n’en a plus besoin et au plus tard à l’expiration configurée. Pour `CARD`, ces colonnes restent nulles.
 - `reservation_state`: `ACTIVE`, `CONSUMED` ou `RELEASED`. Le succès passe les items à `CONSUMED` ; un terminal non réussi prouvé les passe à `RELEASED`. `PaymentOrderItem` est l’unique source de réservation.
@@ -426,7 +426,19 @@ Une affectation suit `ACTIVE -> ENDED`. À `ENDED`, elle reste historisée et le
 
 `SUCCEEDED` est terminal. Dans la transaction de succès, les réservations passent à `CONSUMED`. Un événement contradictoire ultérieur crée une alerte, pas une régression silencieuse.
 
-La tentative suit `REQUESTED -> DISPATCHING -> REQUIRES_ACTION|PROCESSING`, puis `SUCCEEDED|FAILED|EXPIRED|CANCELLED`. Une seule tentative non terminale existe par ordre. Une génération suivante n’est autorisée que si la précédente est terminale sans approbation, que l’ordre reste `CREATED`, que le devis et les réservations restent valides et qu’un lookup fournisseur exclut une charge. Si l’ordre est `FAILED`, `EXPIRED` ou `CANCELLED`, le locataire crée un nouvel ordre et, si nécessaire, un nouveau devis.
+La tentative suit `REQUESTED -> DISPATCHING -> REQUIRES_ACTION|PROCESSING`, puis `SUCCEEDED|FAILED|EXPIRED|CANCELLED`. Une seule tentative non terminale existe par ordre. Une génération suivante n’est autorisée que si la précédente est `FAILED` pour un échec technique prouvé avant acceptation fournisseur, que l’ordre reste `CREATED`, que le devis et les réservations restent valides et qu’un lookup fournisseur exclut tout objet ou charge. Si l’ordre est `FAILED`, `EXPIRED` ou `CANCELLED`, le locataire crée un nouvel ordre et, si nécessaire, un nouveau devis.
+
+La correspondance obligatoire est la suivante :
+
+| Résultat prouvé | État de la tentative | État de l’ordre | Réservations | Action suivante |
+|---|---|---|---|---|
+| Échec technique avant acceptation fournisseur : aucun appel n’a été émis, ou le lookup par référence marchande prouve l’absence d’objet et de charge fournisseur | `FAILED` | reste `CREATED` | restent `ACTIVE` | une génération supérieure est permise si le devis et les réservations sont encore valides |
+| Appel possiblement émis ou résultat ambigu | `PROCESSING` | conserve son état non terminal courant | restent `ACTIVE` | aucun nouvel essai ; lookup et rapprochement obligatoires |
+| Action fournisseur requise ou traitement intermédiaire | `REQUIRES_ACTION` ou `PROCESSING` | `REQUIRES_ACTION` ou `PROCESSING` | restent `ACTIVE` | poursuivre l’action ou le polling de la tentative existante |
+| Approbation fournisseur validée et rapprochée | `SUCCEEDED` | `SUCCEEDED` | passent à `CONSUMED` | aucun retry |
+| Échec terminal fournisseur validé | `FAILED` | `FAILED` | passent à `RELEASED` | nouveau devis et nouvel ordre pour réessayer |
+| Expiration terminale validée | `EXPIRED` | `EXPIRED` | passent à `RELEASED` | nouveau devis et nouvel ordre pour réessayer |
+| Annulation sûre avant approbation | `CANCELLED` | `CANCELLED` | passent à `RELEASED` | nouveau devis et nouvel ordre si le locataire reprend |
 
 ### 6.3 Paiement, disponibilité Propriétaire et relevé
 
@@ -692,7 +704,7 @@ Réponse Locataire : ordre réservé, logements, périodes, `rentPrincipalTotalX
 
 #### Lancement de tentative — `POST /v1/payment-orders/:id/attempts`
 
-Les en-têtes de contexte Locataire et `Idempotency-Key` sont obligatoires. Pour `MOBILE_MONEY`, le schéma strict (`additionalProperties: false`) accepte uniquement `mobileMoneyPhone`; le serveur le normalise puis le chiffre temporairement sur la tentative. Pour `CARD`, le corps JSON doit être strictement vide (`maxProperties: 0`, `additionalProperties: false`). Le canal ne peut pas être changé : sous verrou de `PaymentOrder`, la transaction vérifie contexte, ordre, devis non expiré et réservations. Si une tentative non terminale existe, elle est retournée même avec une autre clé client ; sinon, une nouvelle génération n’est créée qu’après état terminal non approuvé prouvé. La transaction crée `PaymentAttempt` et `PROVIDER_ATTEMPT_REQUESTED`, dont le payload ne contient que l’identifiant de tentative.
+Les en-têtes de contexte Locataire et `Idempotency-Key` sont obligatoires. Pour `MOBILE_MONEY`, le schéma strict (`additionalProperties: false`) accepte uniquement `mobileMoneyPhone`; le serveur le normalise puis le chiffre temporairement sur la tentative. Pour `CARD`, le corps JSON doit être strictement vide (`maxProperties: 0`, `additionalProperties: false`). Le canal ne peut pas être changé : sous verrou de `PaymentOrder`, la transaction vérifie contexte, ordre, devis non expiré et réservations. Si une tentative non terminale existe, elle est retournée même avec une autre clé client ; sinon, une nouvelle génération n’est créée que dans le cas d’échec technique avant acceptation fournisseur défini en section 6.2. La transaction crée `PaymentAttempt` et `PROVIDER_ATTEMPT_REQUESTED`, dont le payload ne contient que l’identifiant de tentative.
 
 La réponse normale est `202 Accepted` avec `paymentAttemptId`, état et URL de polling. `GET /v1/payment-orders/:orderId/attempts/:attemptId`, sous le même contexte autorisé, retourne `PROCESSING`, puis l’action hébergée FedaPay uniquement quand l’état atteint `REQUIRES_ACTION`; un retour immédiat de cette action reste autorisé si l’outbox a déjà été traitée, sans changer la sémantique. Aucun PAN, cryptogramme, date d’expiration ou nom de porteur ne traverse l’API, la base, l’outbox, les logs, les traces ou l’analytics. Le navigateur peut interroger l’ordre et la tentative ; aucune dépendance n’exige que le processus API survive à l’appel fournisseur.
 
@@ -806,7 +818,7 @@ Une sélection provenant de plusieurs Agences n’atteint jamais cette phase : l
 
 #### Phase C — tentative durable
 
-À la confirmation utilisateur, une transaction résout le contexte `TENANT`, verrouille `PaymentOrder`, puis retourne toute tentative non terminale existante ou crée la génération suivante uniquement après preuve qu’une tentative antérieure est terminale et non approuvée. La clé `providerIdempotencyKey` est dérivée de façon stable de l’ordre et de la génération, indépendamment de l’`Idempotency-Key` client. La même transaction crée `PaymentAttempt` et `OutboxEvent(PROVIDER_ATTEMPT_REQUESTED)` avec pour seul payload l’identifiant de tentative. Deux commandes concurrentes avec des clés client distinctes convergent donc vers une seule tentative active.
+À la confirmation utilisateur, une transaction résout le contexte `TENANT`, verrouille `PaymentOrder`, puis retourne toute tentative non terminale existante ou crée la génération suivante uniquement dans le cas d’échec technique avant acceptation fournisseur défini en section 6.2. La clé `providerIdempotencyKey` est dérivée de façon stable de l’ordre et de la génération, indépendamment de l’`Idempotency-Key` client. La même transaction crée `PaymentAttempt` et `OutboxEvent(PROVIDER_ATTEMPT_REQUESTED)` avec pour seul payload l’identifiant de tentative. Deux commandes concurrentes avec des clés client distinctes convergent donc vers une seule tentative active.
 
 Un worker revendique la tentative et :
 
