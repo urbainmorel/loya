@@ -2,6 +2,8 @@
 
 begin;
 
+set local search_path = extensions, pg_catalog;
+
 select plan(9);
 
 select ok(
