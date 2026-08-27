@@ -42,7 +42,11 @@ select ok(
     select proowner = '__s0_oq002_owner'::regrole
     from pg_catalog.pg_proc
     where oid = 'api.__s0_oq002_identity_scope()'::regprocedure
-  ),
+  )
+  and not has_schema_privilege('postgres', 'api', 'USAGE')
+  and not has_schema_privilege('postgres', 'api', 'CREATE')
+  and not has_schema_privilege('postgres', 'private', 'USAGE')
+  and not has_schema_privilege('postgres', 'private', 'CREATE'),
   'POC schemas, table and function use the hardened owner'
 );
 

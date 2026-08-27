@@ -33,10 +33,9 @@ grant __s0_oq002_owner to postgres
 create schema private authorization __s0_oq002_owner;
 create schema api authorization __s0_oq002_owner;
 
-grant usage on schema auth to __s0_oq002_owner;
-grant references (id) on table auth.users to __s0_oq002_owner;
-
 set role __s0_oq002_owner;
+grant usage, create on schema private, api to postgres;
+reset role;
 
 create table private.__s0_oq002_scope (
   resource_id uuid primary key,
@@ -90,6 +89,12 @@ as $function$
     );
 $function$;
 
+alter table private.__s0_oq002_scope owner to __s0_oq002_owner;
+alter function api.__s0_oq002_identity_scope()
+  owner to __s0_oq002_owner;
+
+set role __s0_oq002_owner;
+
 revoke all on schema private from public, anon, authenticated, service_role;
 revoke all on schema api from public, anon, authenticated, service_role;
 grant usage on schema private to authenticated;
@@ -106,11 +111,9 @@ revoke all on function api.__s0_oq002_identity_scope()
 grant execute on function api.__s0_oq002_identity_scope()
   to authenticated;
 
+revoke usage, create on schema private, api from postgres;
+
 reset role;
-
-revoke references (id) on table auth.users from __s0_oq002_owner;
-revoke usage on schema auth from __s0_oq002_owner;
-
 revoke __s0_oq002_owner from postgres
   granted by postgres;
 
