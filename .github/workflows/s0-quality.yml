@@ -59,6 +59,7 @@ jobs:
         run: |
           set -euo pipefail
           key_file=""
+          pgtap_log=""
           worker_env=""
           worker_pid=""
 
@@ -69,6 +70,9 @@ jobs:
             fi
             if [[ -n "$key_file" && -f "$key_file" ]]; then
               rm -f -- "$key_file"
+            fi
+            if [[ -n "$pgtap_log" && -f "$pgtap_log" ]]; then
+              rm -f -- "$pgtap_log"
             fi
             if [[ -n "$worker_env" && -f "$worker_env" ]]; then
               rm -f -- "$worker_env"
@@ -133,11 +137,19 @@ jobs:
             psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 \
             < apps/worker/poc/oq-002/setup.sql
 
-          verify_output="$(pnpm exec supabase test db \
+          pgtap_log="$(mktemp "$RUNNER_TEMP/loya-oq002-pgtap.XXXXXX.log")"
+          chmod 600 "$pgtap_log"
+          if pnpm exec supabase test db \
             apps/worker/poc/oq-002/verify.sql \
-            --local)"
+            --local > "$pgtap_log" 2>&1; then
+            verify_status=0
+          else
+            verify_status=$?
+          fi
+          verify_output="$(node scripts/redact-supabase-log.mjs "$pgtap_log")"
           printf '%s\n' "$verify_output"
-          if ! grep -q 'Files=1, Tests=9,' <<< "$verify_output" \
+          if [[ "$verify_status" -ne 0 ]] \
+            || ! grep -q 'Files=1, Tests=9,' <<< "$verify_output" \
             || ! grep -q '^Result: PASS$' <<< "$verify_output"; then
             echo "OQ-002 SQL assertions failed."
             exit 1
