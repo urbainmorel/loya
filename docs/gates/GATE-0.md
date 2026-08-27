@@ -2,9 +2,25 @@
 
 Statut global : **ROUGE — passage au Sprint 1 interdit pour les dépendances concernées**.
 
-Date du constat : **2026-08-26**. Ce fichier est un registre de preuve, pas une nouvelle source métier. Les seules sources normatives sont le [PRD](../../PRD_Gestion_Locative_IA_V1.md), le [STI](../../STI_Gestion_Locative_IA_V1.md), le [DESIGN](../../DESIGN_Gestion_Locative_IA_V1.md), la [ROADMAP](../../ROADMAP_Gestion_Locative_IA_V1.md) et la [maquette Locataire](../../maquette%20%C3%A9crans%20locataire.png). Une documentation fournisseur citée ici ne peut que prouver une capacité technique ; elle ne change aucune règle Loya.
+Date du constat initial : **2026-08-26**. Dernière mise à jour décisionnelle : **2026-08-27**. Ce fichier est un registre de preuve, pas une nouvelle source métier. Les seules sources normatives sont le [PRD](../../PRD_Gestion_Locative_IA_V1.md), le [STI](../../STI_Gestion_Locative_IA_V1.md), le [DESIGN](../../DESIGN_Gestion_Locative_IA_V1.md), la [ROADMAP](../../ROADMAP_Gestion_Locative_IA_V1.md) et la [maquette Locataire](../../maquette%20%C3%A9crans%20locataire.png). Une documentation fournisseur citée ici ne peut que prouver une capacité technique ; elle ne change aucune règle Loya.
 
 La ROADMAP impose l'ordre des sprints et interdit de franchir une porte non prouvée (ROADMAP, l. 10–19). `GATE-0` exige des preuves exécutables et versionnées, pas la seule présence d'une spécification (ROADMAP, l. 109–124 et 226–235).
+
+## Décisions utilisateur enregistrées le 2026-08-27
+
+L'approbation explicite de l'utilisateur clôt la question décisionnelle, mais ne constitue pas une preuve de correction des sources, d'implémentation ou de test. Les preuves manquantes ci-dessous maintiennent donc les critères concernés à leur statut factuel actuel.
+
+| Question | Choix approuvé | Preuve restant à produire |
+|---|---|---|
+| `OQ-001` | A — applications → points d'entrée publics des packages ; jamais packages → applications | Règles de frontière et tests d'imports/cycles |
+| `OQ-003` | B — seuls les échecs techniques pré-acceptation laissent l'ordre `CREATED`; l'échec terminal fournisseur termine l'ordre | Implémentation et tests timeout/lookup/concurrence de la table transcrite dans le STI |
+| `OQ-004` | A — CTA long « DÉCLARER DISPONIBLE AUPRÈS DE L'AGENCE » sur bandeau et confirmation | Prototype et E2E de la correction transcrite dans le DESIGN |
+| `OQ-005` | A — cocher aussi 600 000 FCFA ; principal 1 350 000 FCFA, puis frais du devis valide | Captures conformes et assertion `principal + frais = total` |
+| `OQ-006` | A — corriger la maquette et suivre strictement ordre, champs et libellés du DESIGN | Maquette, captures responsive et tests du devis |
+| `OQ-007` | A — remplacer Orange Money par Celtiis Cash dans la maquette | Maquette corrigée et mapping fournisseur prouvé |
+| `OQ-008` | A — corriger libellés, CTA et dates de `L-03` selon le DESIGN | Maquette corrigée et tests contenu/WhatsApp/date |
+
+Source de la preuve décisionnelle : approbation explicite de l'utilisateur le **2026-08-27**, consignée avec l'historique complet dans [OPEN-QUESTIONS.md](../decisions/OPEN-QUESTIONS.md).
 
 ## Légende de statut
 
@@ -38,7 +54,7 @@ Les contrôles documentaires prouvent la cohérence des références, pas la fai
 | Data API, grants, RLS, JWT utilisateur et fonctions privilégiées minimales | NON PROUVÉ | Aucune migration, matrice de privilèges ou suite pgTAP. ROADMAP, l. 231 ; STI, l. 440–534. |
 | Topologie Workers + Supabase, Queues, Storage, R2 et Browser Run | NON PROUVÉ | Architecture décrite mais aucun manifeste ni POC Worker→Supabase/FedaPay. ROADMAP, l. 232 ; STI, l. 20–73 et 1249–1253. |
 | Ledger, commissions et disponibilité déclarative | NON PROUVÉ | Formules normatives présentes, mais aucun domaine exécutable, test de propriété, migration ou modèle contrôlé. ROADMAP, l. 233 ; STI, l. 304–438. |
-| Prototypes `X-01..X-06`, `L-01..L-05`, `A-12`, `O-01..O-04` | ROUGE | Une maquette statique `L-01..L-05` existe, mais les autres prototypes et tests manquent et `L-03/L-04` comportent des écarts listés dans `OPEN-QUESTIONS.md`. ROADMAP, l. 193–202 et 234. |
+| Prototypes `X-01..X-06`, `L-01..L-05`, `A-12`, `O-01..O-04` | ROUGE | Une maquette statique `L-01..L-05` existe, mais les autres prototypes et tests manquent. Les écarts `L-03/L-04/A-12` ont désormais une décision approuvée (`OQ-004..008`), sans correction ni preuve d'application à ce stade. ROADMAP, l. 193–202 et 234. |
 | APDP, rétention, SLO, RPO/RTO et restauration avec décision signée | NON PROUVÉ | Aucun registre, DPIA/décision, matrice de rétention, seuil chiffré ou exercice de restauration. ROADMAP, l. 204–224 et 235 ; PRD, l. 624–632. |
 
 Conclusion : le premier critère de sortie est vert localement, mais les sept autres ne le sont pas. `GATE-0` reste donc **ROUGE**.
@@ -53,11 +69,11 @@ Références : ROADMAP, l. 117–124 et 1001–1004 ; STI, l. 10–18, 1287–13
 | Générer exigences → tâches → écrans → tests/preuves | VERT | `docs/traceability/requirements-matrix.json` est régénérable ; `check:traceability` couvre 123 exigences, 54 tâches et 43 écrans. |
 | Détecter les références orphelines | VERT | Test positif et test injectant `FR-999` présents et réussis. |
 | Détecter automatiquement toutes les fonctions exclues | VERT local | `check:scope` couvre les familles verrouillées : paiement partiel, contrats, états des lieux, maintenance/tickets, BI, imports, exports Propriétaire, remboursements fournisseur, balances/retraits FedaPay, reversements, cantonnement, IA visible, Auth locale/téléphone, identité maison et application native. Les tests négatifs passent. PRD, l. 121–139 ; ROADMAP, l. 925–943. |
-| Détecter les divergences de stack | VERT local, frontière en attente | Les substitutions Node/Next/Fastify/Redis/BullMQ/D1/native sont refusées. Dès que `apps/web` ou `apps/worker` existe, le contrôle exige React/Vite, Hono/Wrangler et Supabase. Le sens d'import `apps/*` / `packages/*` reste bloqué par `OQ-001`, sans choix implicite. STI, l. 53–73 et 87–110. |
+| Détecter les divergences de stack | VERT local, application future à prouver | Les substitutions Node/Next/Fastify/Redis/BullMQ/D1/native sont refusées. Dès que `apps/web` ou `apps/worker` existe, le contrôle exige React/Vite, Hono/Wrangler et Supabase. `OQ-001` est résolue par le choix A : applications → points d'entrée publics des packages, jamais l'inverse ; aucun squelette ni test de frontière ne prouve encore son application. STI, l. 53–73 et 87–110. |
 | Formaliser règles de périmètre, configuration et migration | VERT local | `README.md`, `CONTRIBUTING.md`, `.node-version`, `package.json`, CI et scan formalisent le socle, expansion–contraction, N/N−1 et interdictions de base. Le choix concret du mécanisme de rollback reste ouvert dans `OPEN-QUESTIONS.md`. |
 | Commit signé, index reproductible, configuration contrôlée, rapport anti-périmètre | VERT | Commits signés par GitHub et vérifiés par son API, arbre indexé rejoué dans un checkout propre, CI distante verte et rapport anti-périmètre exhaustif pour les familles verrouillées. |
 
-Statut de tâche : **VERT pour les livrables et preuves de `S0-001`**. `OQ-001` et `OQ-011` restent explicitement ouvertes et bloquent la configuration de leurs dépendances, sans invalider la baseline qui les détecte et les consigne.
+Statut de tâche : **VERT pour les livrables et preuves de `S0-001`**. `OQ-001` est résolue par le choix A, dont l'application reste à prouver lors du squelette ; `OQ-011` reste ouverte et bloque la politique de rollback de ses dépendances, sans invalider la baseline qui la détecte et la consigne.
 
 ## S0-002 — Contrat FedaPay — P0
 
@@ -68,8 +84,9 @@ Références : ROADMAP, l. 126–144 et 1004 ; PRD, l. 209–241 et 620–632 ; 
 | Sous-comptes/marketplace, KYB Agence, marchand, XOF et états | NON PROUVÉ | Contrat commercial/technique, compte sandbox et mapping versionné absents. |
 | Corps brut, signature, timestamp, anti-rejeu, ID événement et retries | NON PROUVÉ | La documentation FedaPay décrit `X-FEDAPAY-SIGNATURE`, doublons et retries, mais aucune fixture expurgée ni vérification Hono n'existe. |
 | Devis de frais Locataire, expiration et principal + frais = total | NON PROUVÉ | Aucun endpoint sandbox ou tarif contractuel versionné ne prouve un devis avant débit. STI, l. 778–789, bloque l'activation si cette propriété manque. |
-| Mobile Money et carte hébergée sans donnée carte Loya | NON PROUVÉ | Canaux et checkout réels non validés ; la maquette cite en plus un opérateur divergent. |
+| Mobile Money et carte hébergée sans donnée carte Loya | NON PROUVÉ | Canaux et checkout réels non validés. `OQ-007` est résolue par le choix A (Celtiis Cash remplace Orange Money), mais la maquette et le mapping fournisseur ne sont pas encore corrigés/prouvés. |
 | `merchantReference`, idempotence, lookup après timeout et double charge | NON PROUVÉ | Aucun test de création concurrente ou lookup par référence. |
+| Retry tentative/ordre | VERT décisionnel, NON PROUVÉ exécutable | `OQ-003` est résolue par le choix B et transcrite dans le STI : seul un échec technique pré-acceptation laisse l'ordre `CREATED`; un échec terminal fournisseur termine l'ordre. L'implémentation et les tests restent absents de cette preuve. |
 | Relecture par marchand et fenêtre après restauration | NON PROUVÉ | Aucun contrat, compte retiré testable ni rapport de fenêtre. |
 | Remboursement intégral exécuté hors Loya | NON PROUVÉ | Règle Loya écrite, comportement fournisseur et runbook non validés. |
 | `PAID` indépendant de la disponibilité des fonds | VERT documentaire, NON PROUVÉ fournisseur | Invariant explicite dans PRD/STI/ROADMAP ; aucun test sandbox. |
@@ -159,8 +176,8 @@ Références : ROADMAP, l. 193–202 et 1009 ; DESIGN, l. 459–556, 662–676 e
 | Critère | Statut | Preuve ou écart |
 |---|---|---|
 | Prototyper `X-01..X-06` | NON PROUVÉ | Aucun prototype transverse. |
-| Tester `L-01..L-05` à 320/360/390 | ROUGE | Maquette statique disponible, sans captures par largeur ni test ; conflits `L-03/L-04` documentés dans les questions ouvertes. |
-| Prototyper `A-12` lot/correction/historique | ROUGE | Aucun prototype et deux CTA normatifs contradictoires dans le DESIGN. |
+| Tester `L-01..L-05` à 320/360/390 | ROUGE | Maquette statique disponible, sans captures par largeur ni test. Les décisions `OQ-005..008` sont résolues par le choix A, mais la maquette n'est pas encore corrigée et aucune preuve visuelle/financière n'est fournie. |
+| Prototyper `A-12` lot/correction/historique | ROUGE | Aucun prototype. `OQ-004` est résolue par le choix A et transcrite dans le DESIGN (CTA long sur bandeau et confirmation), mais le prototype et les tests ne sont pas encore prouvés ici. |
 | Prototyper `O-01..O-04` | NON PROUVÉ | Aucun prototype Propriétaire. |
 | Vérifier l'absence de reversement dans l'espace Propriétaire | NON PROUVÉ | Aucun écran Propriétaire à inspecter. |
 | Vérifier WCAG 2.2 AA, zoom/reflow, une action principale | NON PROUVÉ | Aucun rapport clavier, lecteur d'écran, contraste ou reflow. |
@@ -202,7 +219,7 @@ Statut de tâche : **NON PROUVÉ**.
 
 ## Conditions minimales pour réévaluer la porte
 
-1. Fermer les décisions de [OPEN-QUESTIONS.md](../decisions/OPEN-QUESTIONS.md) qui affectent S0.
+1. Fermer les questions encore ouvertes de [OPEN-QUESTIONS.md](../decisions/OPEN-QUESTIONS.md) qui affectent S0 et matérialiser/tester les décisions déjà résolues.
 2. Attacher les rapports sandbox/configuration pour FedaPay, Supabase Auth/RLS/Queues et Cloudflare.
 3. Fournir prototypes et tests `X`, `L`, `A-12`, `O`, puis corriger les conflits de maquette.
 4. Fournir décisions APDP/rétention et seuils SLO/RPO/RTO, puis exécuter une restauration chronométrée.

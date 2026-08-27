@@ -1,37 +1,37 @@
-# Questions ouvertes bloquantes — Loya V1
+# Registre des questions et décisions — Loya V1
 
-Statut du registre : **OUVERT**. Date du constat : **2026-08-26**.
+Statut du registre : **OUVERT — 7 décisions résolues, 15 questions ouvertes**. Date du constat initial : **2026-08-26**. Dernière mise à jour : **2026-08-27**.
 
 Ce registre ne crée aucune règle produit, financière, UX ou technique. Les seules sources normatives sont le [PRD](../../PRD_Gestion_Locative_IA_V1.md), le [STI](../../STI_Gestion_Locative_IA_V1.md), le [DESIGN](../../DESIGN_Gestion_Locative_IA_V1.md), la [ROADMAP](../../ROADMAP_Gestion_Locative_IA_V1.md) et la [maquette Locataire](../../maquette%20%C3%A9crans%20locataire.png). Le PRD interdit d'inventer une règle financière, un rôle ou un état et impose de bloquer puis documenter toute ambiguïté (PRD, l. 10–17).
 
-Une question n'est close que par une décision explicite et traçable indiquant : l'option retenue ou sa formulation exacte, le décideur responsable, la date, les sources normatives à corriger le cas échéant et la preuve/test attendu. La fermeture du ticket ou une implémentation implicite ne vaut pas décision.
+Une question n'est close que par une décision explicite et traçable indiquant : l'option retenue ou sa formulation exacte, le décideur responsable, la date, les sources normatives à corriger le cas échéant et la preuve/test attendu. La fermeture du ticket ou une implémentation implicite ne vaut pas décision. Inversement, une décision résolue ne prouve ni sa transcription dans les sources normatives, ni son implémentation, ni ses tests : ces preuves restent suivies séparément dans [GATE-0](../gates/GATE-0.md).
 
-## Synthèse des décisions requises
+## Synthèse des questions et décisions
 
-| ID | Décision à obtenir | Bloque au minimum | Responsable de décision attendu |
-|---|---|---|---|
-| `OQ-001` | Sens de la frontière d'import `apps/*` / `packages/*` | `S0-001`, `S0-006`, `S1-001` | Architecture |
-| `OQ-002` | Mécanisme Worker → SQL/RPC sous identité utilisateur | `S0-004`, `S1-004` | Architecture + sécurité |
-| `OQ-003` | Correspondance entre échec de tentative et état de l'ordre | `S0-002`, `S3-003`, `S3-005` | Produit paiement + architecture |
-| `OQ-004` | Libellé normatif du CTA `A-12` | `S0-007`, `S4-003` | Produit + Design |
-| `OQ-005` | Sélection et total incohérents dans `L-04` | `S0-007`, `S3-001`, `S4-001` | Produit + Finance + Design |
-| `OQ-006` | Ordre, devis, champs et libellés contradictoires de `L-04` | `S0-007`, `S3-001`, `S4-001` | Produit + Design |
-| `OQ-007` | Liste des opérateurs Mobile Money de `L-04` | `S0-002`, `S0-007` | Produit paiement + Design |
-| `OQ-008` | Libellés, contact et dates incohérents de `L-03` | `S0-007`, `S4-001` | Produit + Design |
-| `OQ-009` | Issue si le contrat FedaPay ne prouve pas toutes les capacités | `GATE-0`, `S0-002` | Commanditaire + Paiement |
-| `OQ-010` | Transaction outbox + Supabase Queues et identité d'appel | `S0-004`, `S0-006`, `S1-007` | Architecture + sécurité |
-| `OQ-011` | Politique réelle de rollback des migrations | `S0-001`, `S1-003`, `S1-004` | Architecture + exploitation |
-| `OQ-012` | Motifs et autorisations d'annulation d'une échéance | `S1-003`, `S2-005` | Produit + Finance |
-| `OQ-013` | Instant exact de passage à `OVERDUE` | `S2-005`, `S4-004` | Produit + Finance |
-| `OQ-014` | Valeurs de configuration non chiffrées | `GATE-0` puis chaque activation concernée | Sécurité + Exploitation + Produit |
-| `OQ-015` | Durée de rétention, IAM et purge du journal R2 | `GATE-0`, premier appel FedaPay | Sécurité + Conformité + Exploitation |
-| `OQ-016` | Preuve technique de fraîcheur MFA à cinq minutes | `S0-003`, `S1-005`, `S1-007` | Sécurité + Plateforme |
-| `OQ-017` | Champs monétaires autorisant exactement zéro | `S0-005`, migrations financières | Produit + Finance |
-| `OQ-018` | Calendrier, échéance et annulation des relevés plateforme | `S0-005`, `S3-008` | Produit + Finance + Exploitation |
-| `OQ-019` | Configuration initiale des paiements manuels et preuves | `S2-001`, `S3-006` | Produit + Finance + Exploitation |
-| `OQ-020` | Décisions signées APDP, régions et rétention | `GATE-0`, `S0-008` | Responsable conformité |
-| `OQ-021` | Seuils signés SLO, RPO et RTO | `GATE-0`, `S0-009` | Produit + Exploitation |
-| `OQ-022` | Mentions réglementaires des reçus | `GATE-0`, `S0-008`, `S4-001` | Finance + Conformité |
+| ID | Statut décisionnel | Décision à obtenir ou retenue | Bloque au minimum | Responsable de décision attendu |
+|---|---|---|---|---|
+| `OQ-001` | **RÉSOLUE — A**, 2026-08-27 | Applications → points d'entrée publics des packages ; jamais packages → applications | Preuve d'application : `S0-006`, `S1-001` | Architecture |
+| `OQ-002` | **OUVERTE** | Mécanisme Worker → SQL/RPC sous identité utilisateur | `S0-004`, `S1-004` | Architecture + sécurité |
+| `OQ-003` | **RÉSOLUE — B**, 2026-08-27 | Seul un échec technique pré-acceptation laisse l'ordre `CREATED` | Preuve d'application : `S0-002`, `S3-003`, `S3-005` | Produit paiement + architecture |
+| `OQ-004` | **RÉSOLUE — A**, 2026-08-27 | CTA long sur bandeau et confirmation `A-12` | Preuve de correction : `S0-007`, `S4-003` | Produit + Design |
+| `OQ-005` | **RÉSOLUE — A**, 2026-08-27 | Cocher aussi 600 000 FCFA ; principal de 1 350 000 FCFA et total égal au principal plus les frais du devis valide | Preuve de correction : `S0-007`, `S3-001`, `S4-001` | Produit + Finance + Design |
+| `OQ-006` | **RÉSOLUE — A**, 2026-08-27 | Maquette corrigée ; ordre/champs/libellés du DESIGN appliqués strictement | Preuve de correction : `S0-007`, `S3-001`, `S4-001` | Produit + Design |
+| `OQ-007` | **RÉSOLUE — A**, 2026-08-27 | Celtiis Cash remplace Orange Money dans la maquette | Preuve de correction : `S0-002`, `S0-007` | Produit paiement + Design |
+| `OQ-008` | **RÉSOLUE — A**, 2026-08-27 | Libellés, CTA et dates de la maquette corrigés selon le DESIGN | Preuve de correction : `S0-007`, `S4-001` | Produit + Design |
+| `OQ-009` | **OUVERTE** | Issue si le contrat FedaPay ne prouve pas toutes les capacités | `GATE-0`, `S0-002` | Commanditaire + Paiement |
+| `OQ-010` | **OUVERTE** | Transaction outbox + Supabase Queues et identité d'appel | `S0-004`, `S0-006`, `S1-007` | Architecture + sécurité |
+| `OQ-011` | **OUVERTE** | Politique réelle de rollback des migrations | `S0-001`, `S1-003`, `S1-004` | Architecture + exploitation |
+| `OQ-012` | **OUVERTE** | Motifs et autorisations d'annulation d'une échéance | `S1-003`, `S2-005` | Produit + Finance |
+| `OQ-013` | **OUVERTE** | Instant exact de passage à `OVERDUE` | `S2-005`, `S4-004` | Produit + Finance |
+| `OQ-014` | **OUVERTE** | Valeurs de configuration non chiffrées | `GATE-0` puis chaque activation concernée | Sécurité + Exploitation + Produit |
+| `OQ-015` | **OUVERTE** | Durée de rétention, IAM et purge du journal R2 | `GATE-0`, premier appel FedaPay | Sécurité + Conformité + Exploitation |
+| `OQ-016` | **OUVERTE** | Preuve technique de fraîcheur MFA à cinq minutes | `S0-003`, `S1-005`, `S1-007` | Sécurité + Plateforme |
+| `OQ-017` | **OUVERTE** | Champs monétaires autorisant exactement zéro | `S0-005`, migrations financières | Produit + Finance |
+| `OQ-018` | **OUVERTE** | Calendrier, échéance et annulation des relevés plateforme | `S0-005`, `S3-008` | Produit + Finance + Exploitation |
+| `OQ-019` | **OUVERTE** | Configuration initiale des paiements manuels et preuves | `S2-001`, `S3-006` | Produit + Finance + Exploitation |
+| `OQ-020` | **OUVERTE** | Décisions signées APDP, régions et rétention | `GATE-0`, `S0-008` | Responsable conformité |
+| `OQ-021` | **OUVERTE** | Seuils signés SLO, RPO et RTO | `GATE-0`, `S0-009` | Produit + Exploitation |
+| `OQ-022` | **OUVERTE** | Mentions réglementaires des reçus | `GATE-0`, `S0-008`, `S4-001` | Finance + Conformité |
 
 ## Détail des questions
 
@@ -39,13 +39,17 @@ Une question n'est close que par une décision explicite et traçable indiquant 
 
 **Question.** La phrase « aucun import d'`apps/*` vers `packages/*` » ne permet pas de déterminer sans interprétation quelle couche peut importer l'autre, alors que le monorepo place les règles et adaptateurs partagés dans `packages/*` (STI, l. 53–73).
 
-**Choix explicite à demander :**
+**Statut décisionnel.** **RÉSOLUE — choix A**. Approbation explicite de l'utilisateur le **2026-08-27** : les applications peuvent importer uniquement les points d'entrée publics des packages ; aucun package ne peut importer une application.
 
-- **A.** Les applications peuvent importer uniquement les points d'entrée publics des packages ; aucun package ne peut importer une application.
+**Preuve d'application.** **NON PROUVÉE** : aucun squelette applicatif ni test de frontière ne matérialise encore cette décision.
+
+**Historique des choix proposés :**
+
+- **A — RETENU.** Les applications peuvent importer uniquement les points d'entrée publics des packages ; aucun package ne peut importer une application.
 - **B.** Interdiction littérale de tout import d'une application vers un package ; préciser alors le mécanisme normatif d'assemblage des packages dans les applications.
 - **C.** Publier un graphe d'import allowlisté, arête par arête, qui remplace l'interprétation directionnelle de cette phrase.
 
-**Impact et clôture.** Sans décision, les alias TypeScript, règles ESLint, builds et tests de cycles ne peuvent pas être configurés de manière normative. Clôture par amendement STI ou ADR signé, puis test automatisé d'une arête autorisée, d'une arête interdite et d'un cycle.
+**Suite exigée.** La question décisionnelle est close. Les alias TypeScript, règles de frontière, builds et tests de cycles doivent encore prouver une arête autorisée, une arête interdite et un cycle ; cette absence de preuve ne rouvre pas la décision.
 
 ### `OQ-002` — Worker → SQL/RPC sous identité utilisateur
 
@@ -63,73 +67,97 @@ Une question n'est close que par une décision explicite et traçable indiquant 
 
 **Question.** Une nouvelle génération de tentative est permise après une tentative terminale non approuvée, mais seulement si l'ordre reste `CREATED`. Par ailleurs, un échec fournisseur terminal fait passer un ordre non terminal à `FAILED`, après quoi un nouvel ordre est exigé (STI, l. 201–207, 416–429, 693–697 et 807–824). Il manque la table qui dit quels échecs terminent la tentative seule et lesquels terminent aussi l'ordre.
 
-**Choix explicite à demander :**
+**Statut décisionnel.** **RÉSOLUE — choix B**. Approbation explicite de l'utilisateur le **2026-08-27** : seuls les échecs techniques prouvés avant acceptation fournisseur laissent l'ordre `CREATED`; un échec terminal fournisseur termine l'ordre.
+
+**Preuve d'application.** **PARTIELLE** : la table normative est transcrite dans le STI, mais son implémentation et les tests de concurrence/lookup ne sont pas encore établis par ce registre.
+
+**Historique des choix proposés :**
 
 - **A.** Tout échec terminal d'une tentative termine aussi l'ordre ; le retry utilisateur crée toujours un nouvel ordre/devis.
-- **B.** Seuls les échecs techniques prouvés avant acceptation fournisseur laissent l'ordre `CREATED`; un échec terminal fournisseur termine l'ordre.
+- **B — RETENU.** Seuls les échecs techniques prouvés avant acceptation fournisseur laissent l'ordre `CREATED`; un échec terminal fournisseur termine l'ordre.
 - **C.** Une allowlist de résultats fournisseur laisse l'ordre `CREATED` et autorise une génération supérieure ; tous les autres résultats terminent l'ordre.
 
-**Impact et clôture.** Bloque la machine d'état, la libération des réservations, le polling et l'idempotence. Clôture par table exhaustive `attempt terminal → order state → reservation state → action utilisateur`, codes d'erreur stables et tests de concurrence/timeout/lookup.
+**Suite exigée.** La question décisionnelle est close. La table exhaustive `attempt terminal → order state → reservation state → action utilisateur`, les codes d'erreur stables et les tests de concurrence/timeout/lookup restent requis.
 
 ### `OQ-004` — CTA contradictoire de `A-12`
 
 **Question.** `AvailabilityBatchBar` impose **« DÉCLARER DISPONIBLE AUPRÈS DE L'AGENCE »**, tandis que l'écran `A-12` impose **« DÉCLARER LA DISPONIBILITÉ »** et la confirmation utilise encore une casse/formulation distincte (DESIGN, l. 447–457, 662–676 et 846–850). Les textes entre guillemets sont normatifs (DESIGN, l. 10–19).
 
-**Choix explicite à demander :**
+**Statut décisionnel.** **RÉSOLUE — choix A**. Approbation explicite de l'utilisateur le **2026-08-27** : utiliser **« DÉCLARER DISPONIBLE AUPRÈS DE L'AGENCE »** sur le bandeau et dans la confirmation.
 
-- **A.** Utiliser la formulation longue sur le bandeau et dans la confirmation.
+**Preuve de correction.** **PARTIELLE** : le libellé normatif est transcrit dans le DESIGN, mais ce registre n'établit encore ni prototype ni test.
+
+**Historique des choix proposés :**
+
+- **A — RETENU.** Utiliser la formulation longue sur le bandeau et dans la confirmation.
 - **B.** Utiliser la formulation courte sur le bandeau et dans la confirmation.
 - **C.** Conserver deux libellés selon la surface et publier la correspondance exacte composant → confirmation.
 
-**Impact et clôture.** Bloque la validation visuelle et les assertions E2E. Clôture par correction du DESIGN et capture/tests du texte retenu.
+**Suite exigée.** La question décisionnelle est close. La validation et le versionnage de la correction normative, les captures et les assertions E2E du libellé restent requis.
 
 ### `OQ-005` — Sélection et total incohérents dans la maquette `L-04`
 
 **Question.** Dans la maquette, les deux loyers visiblement cochés valent 450 000 et 300 000 FCFA, soit 750 000 FCFA, alors que le sous-total et le total affichent 1 350 000 FCFA ; le loyer de 600 000 FCFA paraît non coché. Or les montants affichés doivent provenir exactement de la sélection et du devis serveur (DESIGN, l. 504–523 ; STI, l. 664–697).
 
-**Choix explicite à demander :**
+**Statut décisionnel.** **RÉSOLUE — choix A**. Approbation explicite de l'utilisateur le **2026-08-27** : cocher aussi la ligne de 600 000 FCFA. La convergence avec l'invariant financier existant fixe le principal à 1 350 000 FCFA et le total débité à ce principal plus les frais du devis serveur valide ; un total de 1 350 000 FCFA n'est possible que si ce devis prouve des frais nuls.
 
-- **A.** Cocher aussi la ligne de 600 000 FCFA et conserver le total de 1 350 000 FCFA.
+**Preuve de correction.** **NON PROUVÉE** : la maquette n'est pas corrigée dans cette décision et aucune fixture/assertion financière ne prouve encore le total.
+
+**Historique des choix proposés :**
+
+- **A — RETENU.** Cocher aussi la ligne de 600 000 FCFA et conserver le principal de 1 350 000 FCFA ; le total respecte toujours `principal + frais = total`.
 - **B.** Conserver deux lignes cochées et corriger sous-total/total à 750 000 FCFA, frais valides en sus.
 - **C.** Remplacer le jeu de données par un autre exemple dont sélection, sous-total, frais et total sont arithmétiquement cohérents.
 
-**Impact et clôture.** Bloque la maquette de référence et les fixtures visuelles/financières. Clôture par maquette corrigée, fixture versionnée et assertion `principal + frais = total`.
+**Suite exigée.** La question décisionnelle est close. La maquette corrigée, une fixture versionnée et l'assertion `principal + frais = total` restent requises.
 
 ### `OQ-006` — Ordre, devis, champs et libellés contradictoires de `L-04`
 
 **Question.** La maquette place le récapitulatif avant le moyen de paiement, présélectionne Mobile Money, affiche « Frais de service — 0 FCFA », omet le champ « Numéro Mobile Money » et écrit « Paiement 100% sécurisé ». Le DESIGN impose dans l'ordre méthode, numéro Mobile Money, puis devis serveur ; aucune présélection initiale, jamais `0 FCFA` sans devis valide, libellés « Frais FedaPay » et « Paiement sécurisé » (DESIGN, l. 504–523).
 
-**Choix explicite à demander :**
+**Statut décisionnel.** **RÉSOLUE — choix A**. Approbation explicite de l'utilisateur le **2026-08-27** : corriger la maquette et implémenter strictement l'ordre, les champs et les libellés du DESIGN.
 
-- **A.** Corriger la maquette et implémenter strictement l'ordre, les champs et libellés du DESIGN.
+**Preuve de correction.** **NON PROUVÉE** : la maquette, les captures responsive et les tests du cycle de devis ne sont pas encore corrigés ou fournis.
+
+**Historique des choix proposés :**
+
+- **A — RETENU.** Corriger la maquette et implémenter strictement l'ordre, les champs et libellés du DESIGN.
 - **B.** Retenir la structure de la maquette et amender explicitement le DESIGN et les règles de devis concernées.
 - **C.** Publier une matrice élément par élément indiquant ce qui suit le DESIGN et ce qui suit la maquette, puis corriger les deux sources pour qu'elles convergent.
 
-**Impact et clôture.** Bloque `L-04`, l'accessibilité du formulaire et la prévention d'un faux total. Clôture par source normative convergente, captures 320/360/390 px et tests état initial → devis valide → invalidation/recalcul.
+**Suite exigée.** La question décisionnelle est close. La convergence des sources, les captures 320/360/390 px et les tests état initial → devis valide → invalidation/recalcul restent requis.
 
 ### `OQ-007` — Opérateurs Mobile Money de `L-04`
 
 **Question.** Le DESIGN cite MTN MoMo, Moov Money et Celtiis Cash. La maquette cite MTN MoMo, Moov Money et Orange Money (DESIGN, l. 512–519 ; constat visuel de la maquette).
 
-**Choix explicite à demander :**
+**Statut décisionnel.** **RÉSOLUE — choix A**. Approbation explicite de l'utilisateur le **2026-08-27** : remplacer Orange Money par Celtiis Cash dans la maquette.
 
-- **A.** Remplacer Orange Money par Celtiis Cash dans la maquette.
+**Preuve de correction.** **NON PROUVÉE** : la maquette n'est pas corrigée dans ce registre et le mapping fournisseur/environnement reste à prouver.
+
+**Historique des choix proposés :**
+
+- **A — RETENU.** Remplacer Orange Money par Celtiis Cash dans la maquette.
 - **B.** Ajouter formellement Orange Money aux opérateurs validés en conservant les opérateurs obligatoires du DESIGN.
 - **C.** Rendre la liste exclusivement issue des canaux actifs prouvés par le contrat FedaPay et amender le DESIGN pour préciser si sa liste est minimale ou exhaustive.
 
-**Impact et clôture.** Bloque les libellés UI et les tests de contrat canal/opérateur. Clôture par liste signée, mapping fournisseur/environnement et test de projection.
+**Suite exigée.** La question décisionnelle est close. La maquette corrigée, le mapping fournisseur/environnement et le test de projection restent requis.
 
 ### `OQ-008` — Incohérences de `L-03`
 
 **Question.** La maquette utilise « Informations du bail », « Agence / Propriétaire » et un CTA téléphone ; elle montre aussi une fin de location au 31 décembre 2024 avec un prochain loyer au 5 juin 2025. Le DESIGN exige « Informations de location », la carte « Votre agence », un CTA WhatsApp et aucun contact direct propriétaire ; il précise que la projection n'est pas un bail numérique (DESIGN, l. 490–502).
 
-**Choix explicite à demander :**
+**Statut décisionnel.** **RÉSOLUE — choix A**. Approbation explicite de l'utilisateur le **2026-08-27** : corriger les libellés, le CTA et les dates de la maquette selon le DESIGN.
 
-- **A.** Corriger libellés, CTA et dates de la maquette selon le DESIGN.
+**Preuve de correction.** **NON PROUVÉE** : la maquette et les tests de contenu/WhatsApp/date ne sont pas corrigés ou fournis dans ce registre.
+
+**Historique des choix proposés :**
+
+- **A — RETENU.** Corriger libellés, CTA et dates de la maquette selon le DESIGN.
 - **B.** Retenir les éléments de la maquette et amender explicitement le DESIGN/PRD, sans introduire le bail juridique exclu.
 - **C.** Déclarer séparément les valeurs de démonstration non normatives et les composants/textes normatifs, puis fournir une fixture temporellement cohérente.
 
-**Impact et clôture.** Bloque la validation de `L-03` et risque de suggérer un contrat ou un contact propriétaire hors périmètre. Clôture par maquette corrigée et tests de contenu/WhatsApp/date d'affectation.
+**Suite exigée.** La question décisionnelle est close. La maquette corrigée et les tests de contenu/WhatsApp/date d'affectation restent requis.
 
 ### `OQ-009` — Issue contractuelle FedaPay
 
@@ -303,4 +331,4 @@ Pour chaque mode, la décision doit aussi préciser référence obligatoire/facu
 
 ## Règle de reprise
 
-Tant qu'une question reste ouverte, l'équipe peut produire un spike ou un double de test, mais ne doit pas faire passer la dépendance concernée au vert ni cacher un choix dans le code. Toute nouvelle contradiction découverte est ajoutée ici avant implémentation, conformément au PRD, l. 15–17, et aux preuves exigées par la ROADMAP, l. 109–124 et 226–235.
+Tant qu'une question reste ouverte, l'équipe peut produire un spike ou un double de test, mais ne doit pas faire passer la dépendance concernée au vert ni cacher un choix dans le code. Pour une question résolue, la décision est stable mais sa dépendance ne passe au vert qu'après correction et preuve explicites. Toute nouvelle contradiction découverte est ajoutée ici avant implémentation, conformément au PRD, l. 15–17, et aux preuves exigées par la ROADMAP, l. 109–124 et 226–235.
