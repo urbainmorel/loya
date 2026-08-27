@@ -11,6 +11,7 @@ export default tseslint.config(
       ".wrangler/**",
       "coverage/**",
       "graphify-out/**",
+      "test-results/**",
       "docs/traceability/requirements-matrix.json",
       "**/worker-configuration.d.ts",
     ],
@@ -76,6 +77,19 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         project: ["./packages/*/tsconfig.test.json"],
+        projectService: false,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-floating-promises": "error",
+    },
+  },
+  {
+    files: ["e2e/**/*.ts", "playwright.config.ts"],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.e2e.json"],
         projectService: false,
         tsconfigRootDir: import.meta.dirname,
       },
