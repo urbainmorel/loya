@@ -462,6 +462,15 @@ Le composant reçoit une date serveur, pas une date saisie. Une aide persistante
 
 Les sections `L-01` à `L-05` fixent intégralement la hiérarchie, les proportions, les CTA, le thème et la densité. Tous les noms, dates, photos et montants proviennent des projections serveur ou des états de démonstration explicitement marqués. Les cadres et ombres de téléphone, l’heure système `9:41`, les numéros de présentation 1–5 et les textes marketing extérieurs sont exclus.
 
+Décision de convergence du 27 août 2026 : les anomalies du raster composite Locataire doivent être corrigées dans les captures produites depuis l’implémentation. Jusqu’à leur remplacement, les seuls éléments supersédés dans ce raster sont les suivants :
+
+- `L-03` utilise « Informations de location », « Votre agence », le CTA WhatsApp et des dates d’affectation cohérentes avec la prochaine échéance ; aucun contact direct propriétaire n’est affiché ;
+- dans la fixture `L-04`, les trois loyers de 450 000, 300 000 et 600 000 FCFA sont cochés et produisent un principal de 1 350 000 FCFA ; le total débité vaut ce principal plus les frais du devis serveur valide ;
+- `L-04` suit l’ordre de la section 6.4, ne présélectionne aucun canal, demande « Numéro Mobile Money » pour Mobile Money et emploie « Frais FedaPay » puis « Paiement sécurisé » ;
+- la liste Mobile Money de référence est MTN MoMo, Moov Money et Celtiis Cash ; Orange Money n’est pas affiché dans cette fixture.
+
+Tous les autres repères visuels non contradictoires du raster restent applicables. Les captures de référence 320, 360 et 390 px issues de l’implémentation remplacent le raster corrigé pour la recette visuelle.
+
 À 390 px, le premier contenu actionnable doit être visible sans zoom ; à 320 px, la composition se replie sans réduire le corps sous 16 px. L’architecture possède quatre onglets fixes et un fond `#fcfcfc`. La barre inférieure respectant la safe area est visible sur les destinations principales `L-01`, `L-02`, `L-04` et `L-05`. `L-03` est une route profonde avec retour et peut masquer cette barre ; `L-06` à `L-08` suivent la même règle de route profonde et restaurent l’onglet d’origine au retour.
 
 ### 6.1 Tableau de bord — `L-01`
@@ -671,7 +680,7 @@ Le bandeau de lot reprend le nombre de loyers, les propriétaires concernés et 
 
 > Vous déclarez que ces loyers sont disponibles auprès de votre agence à la date enregistrée par Loya. Cette action n’effectue aucun transfert vers les propriétaires.
 
-CTA : **« DÉCLARER LA DISPONIBILITÉ »**. La date est fixée par le serveur. Le succès persistant indique « Disponibilité déclarée le {date} pour {n} loyer(s) » et met à jour les lignes sans toast seul. Un conflit ou une ligne devenue inéligible annule tout le lot et indique les éléments à relire ; aucun succès partiel.
+CTA : **« DÉCLARER DISPONIBLE AUPRÈS DE L’AGENCE »**. La date est fixée par le serveur. Le succès persistant indique « Disponibilité déclarée le {date} pour {n} loyer(s) » et met à jour les lignes sans toast seul. Un conflit ou une ligne devenue inéligible annule tout le lot et indique les éléments à relire ; aucun succès partiel.
 
 Dans le détail d’une déclaration, ADMIN/COMPTABLE disposent de **« CORRIGER LA DÉCLARATION »**. Une modale exige un motif, annonce le retour à « À confirmer avec l’Agence » et précise que le paiement Locataire reste payé. L’historique montre date, acteur, changement et motif. Aucun montant libre, méthode de remise, référence bancaire, preuve, état « Reversé/Retiré/Reçu » ou validation du Propriétaire n’existe.
 
@@ -845,7 +854,7 @@ Les notifications transactionnelles et de sécurité ne présentent aucun interr
 
 ### 12.2 Confirmations financières
 
-Une confirmation décrit : action, acteur/destinataire, périodes, principal, mode et conséquences. Sur mobile, utiliser un panneau plein écran si le contenu dépasse une courte bottom sheet. Le bouton confirme avec un verbe spécifique : « Enregistrer le paiement », « Déclarer la disponibilité », « Corriger la déclaration », « Enregistrer le remboursement externe ».
+Une confirmation décrit : action, acteur/destinataire, périodes, principal, mode et conséquences. Sur mobile, utiliser un panneau plein écran si le contenu dépasse une courte bottom sheet. Le bouton confirme avec un verbe spécifique : « Enregistrer le paiement », « Déclarer disponible auprès de l’agence », « Corriger la déclaration », « Enregistrer le remboursement externe ».
 
 Ne jamais employer « OK » comme action financière principale.
 
