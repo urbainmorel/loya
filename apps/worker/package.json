@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@loya/schemas": "workspace:*",
-    "hono": "4.13.5"
+    "hono": "4.13.11"
   },
   "devDependencies": {
     "wrangler": "4.127.0"
